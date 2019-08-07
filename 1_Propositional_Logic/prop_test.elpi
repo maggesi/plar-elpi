@@ -1,0 +1,15 @@
+accumulate "prop".
+
+main :-
+    print "Test 1",
+    ([evalvar "X" tt,
+      evalvar "Y" ff]
+      => std.spy(eval (atom "X" && atom "Y") B1)), !, print B1,
+    print "Test 2",
+    ([evalvar "X" tt,
+      evalvar "Y" tt]
+     => std.spy(eval (atom "X" && atom "Y") B2)), !, print B2,
+    print "Test 3",
+    std.spy(atoms (atom "X" && atom "Y" !! atom "X") L3), !, print L3,
+    print "Test 4",
+    std.spy(truthtable (atom "X" && atom "Y" !! (atom "X" ==> atom "Z"))).

@@ -1,0 +1,57 @@
+%%% ===========================================================================
+%%% Basic stuff for propositional logic: datatype, parsing and printing.
+%%% ===========================================================================
+
+accumulate "formula".
+
+pred evalvar i:string, o:bool.
+pred eval i:formula, o:bool.
+eval falsity ff.
+eval truth tt.
+eval (atom S)  A :- evalvar S A.
+eval (neg P)   A :- negb {eval P} A.
+eval (P &&  Q) A :- andb {eval P} {eval Q} A.
+eval (P !!  Q) A :- orb  {eval P} {eval Q} A.
+eval (P ==> Q) A :- impb {eval P} {eval Q} A.
+eval (P <=> Q) A :- iffb {eval P} {eval Q} A.
+
+pred atoms i:formula, o:list string.
+atoms P L :-
+    (pi S\ pi L\ pi L1\ fold (atom S) L L1 :- insert S L L1, !)
+    => fold P [] L.
+
+pred onallvaluations i:formula, i:list string.
+pred onallvaluations_action i:bool.
+onallvaluations P []     :- onallvaluations_action {eval P}.
+onallvaluations P [A|As] :- (evalvar A ff => onallvaluations P As),
+                            (evalvar A tt => onallvaluations P As).
+
+pred truthtable i:formula.
+truthtable P :-
+    atoms P Atoms,
+    print ["P" | Atoms],
+    (pi B\ pi Bs\
+       onallvaluations_action B :- std.map Atoms evalvar Bs, print [B | Bs])
+    => onallvaluations P Atoms.
+
+pred tautology i:formula.
+tautology P :-
+    atoms P Atoms,
+    onallvaluations_action tt => onallvaluations P Atoms.
+
+pred unsatisfiable i:formula.
+unsatisfiable P :- tautology (neg P).
+
+pred satisfiable i:formula.
+satisfiable P :- not (unsatisfiable P).
+
+run P :-
+    print P, P,
+
+main :-
+    std.spy(truthtable (neg (atom "A") !! atom "B")), !,
+    std.spy(tautology (neg (atom "A") !! atom "A")), !,
+    std.spy(tautology (falsity ==> atom "A")), !,
+    std.spy(tautology (neg (atom "A") !! atom "B")), !,
+    std.spy(unsatisfiable (neg (atom "A") !! atom "B")), !,
+    std.spy(satisfiable (neg (atom "A") !! atom "B")), !.
