@@ -2,19 +2,19 @@ accumulate "formula".
 
 type p, q, r formula.
 
-atom P :- std.mem! [p,q,r] P.
+atomic P :- std.mem! [p,q,r] P.
 
 main :-
     print "Test 1",
     [ (copy_formula p q :- !)
     , (copy_formula q r :- !)
-    , (pi X\ copy_formula X X)
-    ] => copy_formula (p && q !! r) E1, !, print E1,
+    , (pi X\ copy_formula X X :- atomic X)
+    ] => std.spy(copy_formula (p && q !! r) E1), !, print E1,
     print "Test 2",
     (pi F\
      [ (F p r :- !)
      , (F r p :- !)
      , (pi X\ F X X)
-     ] => onatoms F (p && q !! r) E2), !, print E2,
+     ] => std.spy(onatoms F (p && q !! r) E2)), !, print E2,
     print "Test 3",
     std.spy(atoms (p && q !! r) E3), !, print E3.

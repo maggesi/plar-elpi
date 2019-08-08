@@ -2,7 +2,7 @@ accumulate "prop".
 
 type p, q, r formula.
 
-atom P :- std.mem! [p,q,r] P.
+atomic P :- std.mem! [p,q,r] P.
 
 pred is_tautology i:formula, o:bool.
 is_tautology P tt :- tautology P, !.
