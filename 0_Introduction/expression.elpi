@@ -16,7 +16,6 @@
 %% ----------------------------------------------------------------------------
 
 kind expression type.
-type varb string -> expression.
 type const int -> expression.
 type add expression -> expression -> expression.
 type mul expression -> expression -> expression.
@@ -26,8 +25,8 @@ infixl mul 7.
 
 pred simplify1 i:expression, o:expression.
 
-simplify1 (const M add const N) (const P) :- !, P is M + N.
-simplify1 (const M mul const N) (const P) :- !, P is M * N.
+simplify1 (const M add const N) (const P) :- P is M + N, !.
+simplify1 (const M mul const N) (const P) :- P is M * N, !.
 simplify1 (const 0 add X) X :- !.
 simplify1 (X add const 0) X :- !.
 simplify1 (const 0 mul _) (const 0) :- !.
@@ -43,8 +42,8 @@ simplify E E.
 
 main :-
     std.spy(simplify (const 0 add const 1) _E1),
-    std.spy(simplify
-              ((const 0 mul varb "x" add const 1) mul const 3 add const 12)
+    std.spy(pi X\ simplify
+              ((const 0 mul X add const 1) mul const 3 add const 12)
               E2),
     !,
     print E2.
