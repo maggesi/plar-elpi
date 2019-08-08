@@ -31,6 +31,10 @@ iffb ff ff tt.
 iffb ff tt ff.
 iffb tt ff ff.
 
+pred reflect i:prop, o:bool.
+reflect P tt :- P, !.
+reflect _ ff.
+
 %%% ---------------------------------------------------------------------------
 %%% Lists.
 %%% ---------------------------------------------------------------------------
@@ -47,3 +51,27 @@ pred union i:list A, i:list A, o:list A.
 union [] L L.
 union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
 
+%%% ---------------------------------------------------------------------------
+%%% Testing.
+%%% ---------------------------------------------------------------------------
+
+pred ok i:prop.
+ok P :- print "Test ok:" P, P, !, print "Exit ok:" P.
+ok P :- print "  !!! TEST OK FAILED:\n " P "\n  !!!".
+
+pred ko i:prop.
+ko P :- print "Test ko:" P, P, !, print "  !!! TEST KO FAILED:\n " P.
+ko P :- print "Exit ko:" P.
+
+pred equal i:A, i:A.
+equal A A.
+
+pred ok_eq i:(A -> prop), i:A.
+ok_eq P R :- print "Test ok eq:" (P R),
+             sigma X\ P X, !,
+             if (equal R X)
+                (print "Exit ok eq:" (P R))
+                (print "  !!! TEST OK EQ FAILED\n  !!! Expected:"
+                       (P R) "\n  !!! Obtained:" (P X)).
+ok_eq P R :- print "  !!! TEST OK EQ FAILED:\n  !!! Expected:"
+                   (P R) "\n  !!! FAILED".

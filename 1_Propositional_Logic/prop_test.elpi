@@ -4,31 +4,31 @@ type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
-pred reflect i:prop, o:bool.
-reflect P tt :- P, !.
-reflect _ ff.
-
 main :-
-    print "Test 1",
-    ([ (eval p tt :- !)
-     , (eval q ff :- !)
-     ] => std.spy(eval (p && q) B1)), !, print B1,
-    print "Test 2",
-    ([ (eval p tt :- !)
-     , (eval q tt :- !)
-     ] => std.spy(eval (p && q) B2)), !, print B2,
-    print "Test 3",
-    std.spy(atoms (p && q !! p) L3), !, print L3,
-    print "Test 4",
-    std.spy(truthtable (p && q !! (p ==> r))), !,
-    std.spy(truthtable (neg p !! q)), !,
-    print "Test 5",
-    std.spy(reflect tautology (neg p !! p) R1), !, print R1,
-    std.spy(reflect tautology (falsity ==> p) R2), !, print R2,
-    std.spy(reflect tautology (neg p !! q) R3), !, print R3,
-    print "Test 6",
-    std.spy(reflect satisfiable (neg p !! p) R4), !, print R4,
-    std.spy(reflect satisfiable (neg p !! q) R5), !, print R5,
-    std.spy(reflect unsatisfiable (neg p !! q) R6), !,  print R6,
-    std.spy(reflect unsatisfiable (neg p && q) R7), !,  print R7.
+      print "Test eval"
+    , [ (eval p tt :- !)
+      , (eval q ff :- !)
+      ] => ok_eq (eval (p && q)) ff
+    , [ (eval p tt :- !)
+      , (eval q tt :- !)
+      ] => ok_eq (eval (p && q)) tt
+    , print "Test atoms"
+    , ok_eq (atoms (p && q !! p)) [q, p]
+    , print "Test truth table"
+    , truthtable (p && q !! (p ==> r))
+    , truthtable (neg p !! q)
+    , print "Test tautology"
+    , ok (tautology (neg p !! p))
+    , ok (tautology (falsity ==> p))
+    , ko (tautology (neg p !! q))
+    , print "Test satisfiable"
+    , ok (satisfiable (neg p !! p))
+    , ok (satisfiable (neg p !! q))
+    , ko (satisfiable (neg p && p))
+    , print "Test unsatisfiable"
+    , ok (unsatisfiable (neg p && p))
+    , ko (unsatisfiable (neg p !! q))
+    , ko (unsatisfiable (neg p && q))
+    , ko (unsatisfiable (neg p !! p))
+    .
 
