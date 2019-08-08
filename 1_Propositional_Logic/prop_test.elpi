@@ -1,15 +1,42 @@
 accumulate "prop".
 
+type p, q, r formula.
+
+atom P :- std.mem! [p,q,r] P.
+
+pred is_tautology i:formula, o:bool.
+is_tautology P tt :- tautology P, !.
+is_tautology P ff.
+
+pred is_satisfiable i:formula, o:bool.
+is_satisfiable P tt :- satisfiable P, !.
+is_satisfiable P ff.
+
+pred is_unsatisfiable i:formula, o:bool.
+is_unsatisfiable P tt :- unsatisfiable P, !.
+is_unsatisfiable P ff.
+
 main :-
     print "Test 1",
-    ([evalvar "X" tt,
-      evalvar "Y" ff]
-      => std.spy(eval (atom "X" && atom "Y") B1)), !, print B1,
+    ([evalatom p tt,
+      evalatom q ff]
+      => std.spy(eval (p && q) B1)), !, print B1,
     print "Test 2",
-    ([evalvar "X" tt,
-      evalvar "Y" tt]
-     => std.spy(eval (atom "X" && atom "Y") B2)), !, print B2,
+    ([evalatom p tt,
+      evalatom q tt]
+     => std.spy(eval (p && q) B2)), !, print B2,
     print "Test 3",
-    std.spy(atoms (atom "X" && atom "Y" !! atom "X") L3), !, print L3,
+    std.spy(atoms (p && q !! p) L3), !, print L3,
     print "Test 4",
-    std.spy(truthtable (atom "X" && atom "Y" !! (atom "X" ==> atom "Z"))).
+    std.spy(truthtable (p && q !! (p ==> r))), !,
+    std.spy(truthtable (neg p !! q)), !,
+    print "Test 5",
+    std.spy(is_tautology (neg p !! p) R1), !, print R1,
+    std.spy(is_tautology (falsity ==> p) R2), !, print R2,
+    std.spy(is_tautology (neg p !! q) R3), !, print R3,
+    print "Test 6",
+    std.spy(is_satisfiable (neg p !! p) R4), !, print R4,
+    std.spy(is_satisfiable (neg p !! q) R5), !, print R5,
+    std.spy(is_unsatisfiable (neg p !! q) R6), !,  print R6,
+    std.spy(is_unsatisfiable (neg p && q) R7), !,  print R7.
+

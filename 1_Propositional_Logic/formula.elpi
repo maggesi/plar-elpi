@@ -12,7 +12,6 @@ kind formula type.
 type falsity, truth formula.
 type neg formula -> formula.
 type &&, !!, ==>, <=> formula -> formula -> formula.
-type atom string -> formula.
 
 infixl !!  4.
 infixl &&  5.
@@ -58,9 +57,11 @@ copy_formula (P <=> Q) (P1 <=> Q1) :- !, copy_formula P P1, copy_formula Q Q1.
 copy_formula (P ==> Q) (P1 ==> Q1) :- !, copy_formula P P1, copy_formula Q Q1.
 copy_formula P P.
 
-pred onatoms i:(string -> string -> o), i:formula, o:formula.
+pred atom i:formula.
+
+pred onatoms i:(formula -> formula -> o), i:formula, o:formula.
 onatoms F P Q :-
-    (pi S\ pi T\ [F S T, !] => copy_formula (atom S) (atom T))
+    (pi A\ pi B\ copy_formula A B :- atom A, F A B, !)
     => copy_formula P Q.
 
 pred fold i:formula, i:A, o:A.
@@ -71,13 +72,7 @@ fold (P ==> Q) A A1 :- !, fold Q A B, fold P B A1.
 fold (P <=> Q) A A1 :- !, fold Q A B, fold P B A1.
 fold _P A A.
 
-pred overatoms i:(string -> A -> A -> o), i:formula, i:A, o:A.
-overatoms F P A A1 :-
-    (pi S\ pi A\ pi A1\ fold (atom S) A A1 :- F S A A1, !)
-    => fold P A A1.
-
-pred atom_union i:(string -> list A -> o), i:formula, o:list A.
-atom_union F P L :-
-    (pi S\ pi L\ pi L1\ pi M\
-       fold (atom S) L L1 :- F S M, !, union M L L1)
+pred atoms i:formula, o:list formula.
+atoms P L :-
+    (pi A\ pi L\ pi L1\ fold A L L1 :- atom A, !, insert A L L1)
     => fold P [] L.

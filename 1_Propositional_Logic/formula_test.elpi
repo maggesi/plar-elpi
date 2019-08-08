@@ -1,26 +1,17 @@
 accumulate "formula".
 
-pred testfun i:string, o:string.
-testfun S S1 :- S1 is S ^ "pippo".
+type p, q, r formula.
 
-pred testfun2 i:string, o:list string.
-testfun2 S [S1] :- S1 is S ^ "pippo".
+atom P :- std.mem! [p,q,r] P.
 
 main :-
     print "Test 1",
-    std.spy(onatoms testfun (atom "X") E1), !, print E1,
+    [(copy_formula p q :- !),
+     (copy_formula q r :- !)] =>
+    copy_formula (p && q !! r) E1, !, print E1,
     print "Test 2",
-    std.spy(onatoms testfun (neg (atom "X")) E2), !, print E2,
+    (pi F\
+     [F p r, F r p]
+     => onatoms F (p && q !! r) E2), !, print E2,
     print "Test 3",
-    std.spy(onatoms testfun (atom "X" && atom "Y") E3), !, print E3,
-    print "Test 4",
-    (pi F\ F "Z" "A" =>
-     std.spy(onatoms F (atom "X" && atom "Y" !! atom "Z") E2a)), !, print E2a,
-    print "Test 5",
-    ([(copy_formula (atom "X") (atom "B") :- !),
-      (copy_formula (atom "Z") (atom "A") :- !)] =>
-     copy_formula (atom "X" && atom "Y" !! atom "Z") E2b), !, print E2b,
-    print "Test 6",
-    std.spy(atom_union testfun2 (neg (atom "X")) L1), !, print L1,
-    std.spy(atom_union testfun2 (atom "X" && atom "X") L2), !, print L2.
-
+    std.spy(atoms (p && q !! r) E3), !, print E3.
