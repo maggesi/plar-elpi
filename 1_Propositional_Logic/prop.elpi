@@ -4,7 +4,6 @@
 
 accumulate "formula".
 
-pred evalatom i:formula, o:bool.
 pred eval i:formula, o:bool.
 eval falsity  ff :- !.
 eval truth    tt :- !.
@@ -13,15 +12,14 @@ eval (P &&  Q) A :- !, andb {eval P} {eval Q} A.
 eval (P !!  Q) A :- !, orb  {eval P} {eval Q} A.
 eval (P ==> Q) A :- !, impb {eval P} {eval Q} A.
 eval (P <=> Q) A :- !, iffb {eval P} {eval Q} A.
-eval P         A :- !, evalatom P A.
 
 pred onallvaluations i:(bool -> prop), i:formula, i:list formula.
 onallvaluations F P []     :- F {eval P}.
-onallvaluations F P [A|As] :- (evalatom A ff => onallvaluations F P As),
-                              (evalatom A tt => onallvaluations F P As).
+onallvaluations F P [A|As] :- ((eval A ff :- !) => onallvaluations F P As),
+                              ((eval A tt :- !) => onallvaluations F P As).
 
 pred truthtable_row i:list formula, i:bool.
-truthtable_row As B :- std.map As evalatom Bs, print [B | Bs].
+truthtable_row As B :- std.map As eval Bs, print [B | Bs].
 
 pred truthtable i:formula.
 truthtable P :- atoms P As,

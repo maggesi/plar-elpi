@@ -6,25 +6,25 @@ atom P :- std.mem! [p,q,r] P.
 
 pred is_tautology i:formula, o:bool.
 is_tautology P tt :- tautology P, !.
-is_tautology P ff.
+is_tautology _P ff.
 
 pred is_satisfiable i:formula, o:bool.
 is_satisfiable P tt :- satisfiable P, !.
-is_satisfiable P ff.
+is_satisfiable _P ff.
 
 pred is_unsatisfiable i:formula, o:bool.
 is_unsatisfiable P tt :- unsatisfiable P, !.
-is_unsatisfiable P ff.
+is_unsatisfiable _P ff.
 
 main :-
     print "Test 1",
-    ([evalatom p tt,
-      evalatom q ff]
-      => std.spy(eval (p && q) B1)), !, print B1,
+    ([ (eval p tt :- !)
+     , (eval q ff :- !)
+     ] => std.spy(eval (p && q) B1)), !, print B1,
     print "Test 2",
-    ([evalatom p tt,
-      evalatom q tt]
-     => std.spy(eval (p && q) B2)), !, print B2,
+    ([ (eval p tt :- !)
+     , (eval q tt :- !)
+     ] => std.spy(eval (p && q) B2)), !, print B2,
     print "Test 3",
     std.spy(atoms (p && q !! p) L3), !, print L3,
     print "Test 4",
