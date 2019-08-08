@@ -50,7 +50,7 @@ consequent (_P ==> Q) Q.
 %%% ---------------------------------------------------------------------------
 
 pred copy_formula i:formula, o:formula.
-copy_formula (neg P)   (neg P1)    :- !, copy_formula P P1.
+copy_formula   (neg P)    (neg P1) :- !, copy_formula P P1.
 copy_formula (P &&  Q) (P1 &&  Q1) :- !, copy_formula P P1, copy_formula Q Q1.
 copy_formula (P !!  Q) (P1 !!  Q1) :- !, copy_formula P P1, copy_formula Q Q1.
 copy_formula (P <=> Q) (P1 <=> Q1) :- !, copy_formula P P1, copy_formula Q Q1.
@@ -66,7 +66,7 @@ onatoms F P Q :-
 
 pred fold i:formula, i:A, o:A.
 fold   (neg P) A A1 :- !, fold P A A1.
-fold (P && Q) A A1 :- !, fold Q A B, fold P B A1.
+fold (P &&  Q) A A1 :- !, fold Q A B, fold P B A1.
 fold (P !!  Q) A A1 :- !, fold Q A B, fold P B A1.
 fold (P ==> Q) A A1 :- !, fold Q A B, fold P B A1.
 fold (P <=> Q) A A1 :- !, fold Q A B, fold P B A1.
