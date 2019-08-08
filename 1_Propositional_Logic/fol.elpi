@@ -1,0 +1,72 @@
+%%% ===========================================================================
+%%% First-order logic.
+%%% ===========================================================================
+
+accumulate "prop".
+
+%%% ---------------------------------------------------------------------------
+%%% Syntax.
+%%% ---------------------------------------------------------------------------
+
+kind term type.
+
+% Quantifiers.
+type all, ex (term -> formula) -> formula.
+
+% Terms and atomic formulas.
+type fn string -> list term -> term.
+type rel string -> list term -> formula.
+
+atomic (rel _ _).
+
+% Closed formulas.
+kind formula/c type.
+type formula/c formula -> formula/c.
+type ctx (term -> formula/c) -> formula/c.
+
+%%% ---------------------------------------------------------------------------
+%%% Basic iteration.
+%%% ---------------------------------------------------------------------------
+
+pred copy_term i:term, o:term.
+copy_term (fn S Xs) (fn S Ys) :- !, std.map Xs copy_term Ys.
+
+copy_formula (rel S Xs) (rel S Ys) :- !,
+    std.map Xs copy_term Ys.
+copy_formula (all P) (all P1) :- !,
+    pi x\ copy_term x x => copy_formula (P x) (P1 x).
+copy_formula (ex P) (ex P1) :- !,
+    pi x\ copy_term x x => copy_formula (P x) (P1 x).
+
+%%% ---------------------------------------------------------------------------
+%%% Interpretations and semantics.
+%%% ---------------------------------------------------------------------------
+
+pred termval i:(string -> list A -> A -> prop), i:term, o:A.
+:if "DBG:HOLDS"
+termval F X V :- print "Enter:" (termval F X V), fail.
+termval F (fn S Xs) V :- !, std.map Xs (termval F) Vs, F S Vs V.
+
+pred std.exists! i:list A, i:(A -> prop).
+std.exists! [X|_] P :- P X, !.
+std.exists! [_|L] P :- std.exists! L P.
+
+pred is_true i:formula.
+:if "DBG:HOLDS"
+is_true P :- print "Enter:" (is_true P), fail.
+is_true P :- eval P tt.
+
+pred holds i:formula, i:list A.
+:if "DBG:HOLDS"
+holds P D :- print "Enter:" (holds P D), fail.
+holds P D :-
+    % (pi P B\ eval P B :- print "Enter:" (eval P B), fail)
+    [ (pi p\ eval (all p) tt :- std.forall  D (X \ is_true (p X)), !)
+    , (pi p\ eval (ex  p) tt :- std.exists! D (X \ is_true (p X)), !)
+    , (eval (all _) ff :- !)
+    , (eval (ex  _) ff :- !)
+    ] => is_true P.
+
+pred holds/c i:formula/c, i:list A.
+holds/c (formula/c P) D :- holds P D.
+holds/c (ctx P) D :- std.forall D (X \ holds/c (P X) D).
