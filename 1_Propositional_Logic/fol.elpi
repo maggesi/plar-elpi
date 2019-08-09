@@ -5,57 +5,65 @@
 accumulate "prop".
 
 %%% ---------------------------------------------------------------------------
-%%% Syntax.
+%%% Syntax and semantics of terms.
 %%% ---------------------------------------------------------------------------
 
+% Terms.
 kind term type.
+
+% Composed terms (combinations).
+:index(1 1)
+pred combination o:term, o:string, o:list term.
+
+% Mapping on terms.
+pred copy_term i:term, o:term.
+copy_term X Y :- combination X S Xs, !,
+                 std.map Xs copy_term Ys,
+                 combination Y S Ys.
+
+% Evaluation of functors.
+pred funcval i:string, i:list A, o:A.
+:if "DBG:HOLDS"
+funcval S Vs V :- print "Enter:" (funcval S Vs V), fail.
+
+% Evaluation of terms (recursive).
+pred termval i:term, o:A.
+:if "DBG:HOLDS"
+termval X V :- print "Enter:" (termval X V), fail.
+termval X V :- combination X S Xs, funcval S {std.map Xs termval} V.
+
+%%% ---------------------------------------------------------------------------
+%%% Syntax of formulas.
+%%% ---------------------------------------------------------------------------
 
 % Quantifiers.
 type all, ex (term -> formula) -> formula.
 
-% Terms and atomic formulas.
-type fn string -> list term -> term.
-type rel string -> list term -> formula.
-
-atomic (rel _ _).
+% Atomic formulas.
+:index(1 1)
+pred relation o:formula, o:string, o:list term.
 
 % Closed formulas.
 kind formula/c type.
 type formula/c formula -> formula/c.
 type ctx (term -> formula/c) -> formula/c.
 
-%%% ---------------------------------------------------------------------------
-%%% Basic iteration.
-%%% ---------------------------------------------------------------------------
-
-pred copy_term i:term, o:term.
-copy_term (fn S Xs) (fn S Ys) :- !, std.map Xs copy_term Ys.
-
-copy_formula (rel S Xs) (rel S Ys) :- !,
-    std.map Xs copy_term Ys.
+% Mapping on formulas.
 copy_formula (all P) (all P1) :- !,
     pi x\ copy_term x x => copy_formula (P x) (P1 x).
 copy_formula (ex P) (ex P1) :- !,
     pi x\ copy_term x x => copy_formula (P x) (P1 x).
+copy_formula R T :- relation R S Xs, !,
+                    std.map Xs copy_term Ys,
+                    relation T S Ys.
 
-%%% ---------------------------------------------------------------------------
-%%% Interpretations and semantics.
-%%% ---------------------------------------------------------------------------
-
-pred funcval i:string, i:list A, o:A.
-:if "DBG:HOLDS"
-funcval S Vs V :- print "Enter:" (funcval S Vs V), fail.
-
-pred termval i:term, o:A.
-:if "DBG:HOLDS"
-termval X V :- print "Enter:" (termval X V), fail.
-termval (fn S Xs) V :- funcval S {std.map Xs termval} V.
-
+% Interpretation of atomic formulas.
 pred relholds i:string, i:list A.
 :if "DBG:HOLDS"
 relholds S Vs :- print "Enter:" (relholds S Vs), fail.
 
-eval (rel S Xs) B :- !, reflect (relholds S {std.map Xs termval}) B.
+eval P B :- relation P S Xs, !,
+            reflect (relholds S {std.map Xs termval}) B.
 
 pred std.exists! i:list A, i:(A -> prop).
 std.exists! [X|_] P :- P X, !.

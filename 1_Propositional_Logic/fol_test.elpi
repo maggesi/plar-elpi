@@ -4,33 +4,95 @@ accumulate "fol".
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
-funcval "x" [] 0.
-relholds "R" [0].
+kind domain type.
+type a, b domain.
+type x, y term.
+type f term -> term.
+type r, t term -> formula.
 
-pred domain o:list term.
-domain [0,1].
+:index(1 1)
+pred ex1_combination o:term, o:string, o:list term.
+ex1_combination x "x" [].
+ex1_combination y "y" [].
+ex1_combination (f X) "f" [X].
 
-main :- domain D, run_tests
-    [ ok(holds (rel "R" [fn "x" []]) D)
-    , ko(holds (rel "R" [fn "y" []]) D)
-    , ko(holds (rel "T" [fn "x" []]) D)
-    , ok(holds (rel "T" [fn "x" []] !! rel "R" [fn "x" []]) D)
-    , ko(holds (rel "T" [fn "x" []] && rel "R" [fn "x" []]) D)
-    , ok(holds (rel "R" [fn "y" []] !! rel "R" [fn "x" []]) D)
-    , ko(holds (rel "R" [fn "y" []] && rel "R" [fn "x" []]) D)
-    , ok(holds/c (ctx a\ formula/c(rel "R" [a] !! rel "R" [fn "x" []])) D)
-    , ko(holds/c (ctx a\ formula/c(rel "R" [a] && rel "R" [fn "x" []])) D)
+:index(1 1)
+pred ex1_relation o:formula, o:string, o:list term.
+ex1_relation (r X) "r" [X].
+ex1_relation (t X) "t" [X].
+
+pred ex1_funcval i:string, i:list domain, o:domain.
+ex1_funcval "x" [] a.
+ex1_funcval "y" [] b.
+ex1_funcval "f" [a] b.
+ex1_funcval "f" [b] a.
+
+pred ex1_relholds i:string, i:list domain.
+ex1_relholds "r" [a].
+
+pred domain_elements o:list domain.
+domain_elements [a, b].
+
+pred test1.
+test1 :- domain_elements D,
+    [ (pi X\ pi S\ pi Xs\ combination X S Xs :- ex1_combination X S Xs, !)
+    , (pi P\ pi S\ pi Xs\ relation P S Xs :- ex1_relation P S Xs, !)
+    , (pi S\ pi Xs\ pi A\ funcval S Xs A :- ex1_funcval S Xs A, !)
+    , (pi S\ pi Xs\ pi A\ relholds S Xs :- ex1_relholds S Xs, !)
+    ] =>
+    run_tests
+    [ ok(holds (r x) D)
+    , ko(holds (r y) D)
+    , ko(holds (t x) D)
+    , ok(holds (t x !! r x) D)
+    , ko(holds (t x && r x) D)
+    , ok(holds (r y !! r x) D)
+    , ko(holds (r y && r x) D)
+    , ok(holds/c (ctx a\ formula/c (r a !! r x)) D)
+    , ko(holds/c (ctx a\ formula/c(r a && r x)) D)
+    ].
 
 %%% ---------------------------------------------------------------------------
 %%% Boolean interpretation.
 %%% ---------------------------------------------------------------------------
 
-    , ok ([ funcval "0" [] ff
-          , funcval "1" [] tt
-          , (pi X\ pi Y\ pi B\ funcval "+" [X, Y] B :- !, orb X Y B)
-          , (pi X\ pi Y\ pi B\ funcval "*" [X, Y] B :- !, andb X Y B)
-          , (pi X\ pi Y\ pi B\ relholds "=" [X, Y] :- !, iffb X Y tt) ]
-          => holds/c (ctx A\ ctx B\
-                        formula/c (rel "=" [fn "+" [A, B], fn "+" [B, A]]))
-                     [ff,tt])
+type zero, one term.
+type add, mul term -> term -> term.
+type eqq term -> term -> formula.
+
+:index(1 1)
+pred bool_combination o:term, o:string, o:list term.
+bool_combination zero "0" [].
+bool_combination one  "1" [].
+bool_combination (add X Y) "+" [X, Y].
+bool_combination (mul X Y) "*" [X, Y].
+
+:index(1 1)
+pred bool_relation o:formula, o:string, o:list term.
+bool_relation (eqq A B) "=" [A, B].
+
+pred bool_funcval i:string, i:list bool, o:bool.
+bool_funcval "0" [] ff.
+bool_funcval "1" [] tt.
+bool_funcval "+" [A, B] C :- orb  A B C.
+bool_funcval "*" [A, B] C :- andb A B C.
+
+pred bool_relholds i:string, i:list bool.
+bool_relholds "=" [A, B] :- iffb A B tt.
+
+pred test2.
+test2 :-
+    [ (pi X\ pi S\ pi Xs\ combination X S Xs :- bool_combination X S Xs, !)
+    , (pi P\ pi S\ pi Xs\ relation P S Xs :- bool_relation P S Xs, !)
+    , (pi S\ pi Xs\ pi A\ funcval S Xs A :- bool_funcval S Xs A, !)
+    , (pi S\ pi Xs\ pi A\ relholds S Xs :- bool_relholds S Xs, !)
+    ] =>
+    run_tests
+    [ ok (holds/c (ctx A\ ctx B\
+                     formula/c (eqq (add A B) (add B A)))
+                  [ff, tt])
     ].
+
+main :-
+    test1,
+    test2.
