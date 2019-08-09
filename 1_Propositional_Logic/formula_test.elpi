@@ -4,18 +4,20 @@ type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
-main :-
-      print "\nTest copy_formula"
-    , [ (copy_formula p q :- !)
-      , (copy_formula q r :- !)
-      , (pi X\ copy_formula X X :- atomic X)
-      ] => ok_eq (copy_formula (p && q !! r)) (q && r !! r)
-    , print "\nTest onatoms"
-    , (pi F\
-       [ (F p r :- !)
-       , (F r p :- !)
-       , (pi X\ F X X)
-       ] => ok_eq (onatoms F (p && q !! r)) (r && q !! p))
-    , print "\nTest atoms"
-    , ok_eq (atoms (p && q !! r)) [p, q, r]
-    .
+main :- run_tests
+    [ report "Test copy_formula"
+    , (ok_eq (q && r !! r) R \
+         [ (copy_formula p q :- !)
+         , (copy_formula q r :- !)
+         , (pi X\ copy_formula X X :- atomic X)
+         ] => copy_formula (p && q !! r) R)
+    , report "Test onatoms"
+    , (ok_eq (r && q !! p) R \
+         pi F\
+         [ (F p r :- !)
+         , (F r p :- !)
+         , (pi X\ F X X)
+         ] => onatoms F (p && q !! r) R)
+    , report "Test atoms"
+    , ok_eq [p, q, r] (atoms (p && q !! r))
+    ].

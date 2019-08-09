@@ -52,26 +52,41 @@ union [] L L.
 union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
 
 %%% ---------------------------------------------------------------------------
-%%% Testing.
+%%% Rudimentary testing framework.
 %%% ---------------------------------------------------------------------------
 
-pred ok i:prop.
-ok P :- print "Test ok:" P, P, !, print "Exit ok:" P.
-ok P :- print "  !!! TEST OK FAILED:\n " P "\n  !!!".
+kind test type.
+type ok, ko prop -> test.
+type ok_eq A -> (A -> prop) -> test.
+type report string -> test.
 
-pred ko i:prop.
-ko P :- print "Test ko:" P, P, !, print "  !!! TEST KO FAILED:\n " P.
-ko P :- print "Exit ko:" P.
+pred run_tests i:(list test).
+run_tests [] :- print "run_tests: Done!".
+run_tests [T|Ts] :- run_test T, run_tests Ts.
+
+pred run_test i:test.
+run_test (ok P) :- test_ok P.
+run_test (ko P) :- test_ko P.
+run_test (ok_eq R P) :- test_ok_eq R P.
+run_test (report S) :- print S.
+
+pred test_ok i:prop.
+test_ok P :- print "Test ok:" P, P, !, print "Exit ok:" P.
+test_ok P :- print "  !!! TEST OK FAILED:\n " P "\n  !!!".
+
+pred test_ko i:prop.
+test_ko P :- print "Test ko:" P, P, !, print "  !!! TEST KO FAILED:\n " P.
+test_ko P :- print "Exit ko:" P.
 
 pred equal i:A, i:A.
 equal A A.
 
-pred ok_eq i:(A -> prop), i:A.
-ok_eq P R :- print "Test ok eq:" (P R),
-             sigma X\ P X, !,
-             if (equal R X)
-                (print "Exit ok eq:" (P R))
-                (print "  !!! TEST OK EQ FAILED\n  !!! Expected:"
-                       (P R) "\n  !!! Obtained:" (P X)).
-ok_eq P R :- print "  !!! TEST OK EQ FAILED:\n  !!! Expected:"
-                   (P R) "\n  !!! FAILED".
+pred test_ok_eq i:A, i:(A -> prop).
+test_ok_eq R P :- print "Test ok eq:" (P R),
+                  sigma X\ P X, !,
+                  if (equal R X)
+                     (print "Exit ok eq:" (P R))
+                     (print "  !!! TEST OK EQ FAILED\n  !!! Expected:"
+                            (P R) "\n  !!! Obtained:" (P X)).
+test_ok_eq R P :- print "  !!! TEST OK EQ FAILED:\n  !!! Expected:"
+                        (P R) "\n  !!! FAILED".

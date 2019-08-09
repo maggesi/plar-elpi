@@ -15,9 +15,8 @@ eval (rel "T"  _ ) ff.
 pred domain o:list term.
 domain [x,y].
 
-main :-
-      domain D
-    , ok(holds (rel "R" [x]) D)
+main :- domain D, run_tests
+    [ ok(holds (rel "R" [x]) D)
     , ko(holds (rel "R" [y]) D)
     , ko(holds (rel "T" [x]) D)
     , ok(holds (rel "T" [x] !! rel "R" [x]) D)
@@ -26,4 +25,4 @@ main :-
     , ko(holds (rel "R" [y] && rel "R" [x]) D)
     , ok(holds/c (ctx a\ formula/c(rel "R" [a] !! rel "R" [x])) D)
     , ko(holds/c (ctx a\ formula/c(rel "R" [a] && rel "R" [x])) D)
-    .
+    ].
