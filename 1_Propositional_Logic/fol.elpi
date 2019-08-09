@@ -72,9 +72,9 @@ pred holds i:formula, i:list A.
 holds P D :- print "Enter:" (holds P D), fail.
 holds P D :-
     [ (pi p\ eval (all p) tt :- !,
-         pi c \ std.forall  D (X \ termval c X => is_true (p c)))
+         pi c \ std.forall  D (X \ (termval c X :- !) => is_true (p c)))
     , (pi p\ eval (ex  p) tt :- !,
-         pi c \ std.exists! D (X \ termval c X => is_true (p c)))
+         pi c \ std.exists! D (X \ (termval c X :- !) => is_true (p c)))
     , (eval (all _) ff :- !)
     , (eval (ex  _) ff :- !)
     ] => is_true P.
@@ -82,4 +82,4 @@ holds P D :-
 pred holds/c i:formula/c, i:list A.
 holds/c (formula/c P) D :- holds P D.
 holds/c (ctx P) D :-
-    pi c\ std.forall D (X \ termval c X => holds/c (P c) D).
+    pi c\ std.forall D (X \ (termval c X :- !) => holds/c (P c) D).

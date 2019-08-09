@@ -5,6 +5,8 @@
 accumulate "formula".
 
 pred eval i:formula, o:bool.
+:if "DBG:HOLDS"
+eval P B :- print "Enter:" (eval P B), fail.
 eval falsity  ff :- !.
 eval truth    tt :- !.
 eval (  neg P) A :- !, negb {eval P} A.
