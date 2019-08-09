@@ -27,8 +27,10 @@ ex1_funcval "y" [] b.
 ex1_funcval "f" [a] b.
 ex1_funcval "f" [b] a.
 
-pred ex1_relholds i:string, i:list domain.
-ex1_relholds "r" [a].
+pred ex1_relholds i:string, i:list domain, o:bool.
+ex1_relholds "r" [a] tt :- !.
+ex1_relholds "r"  _  ff.
+ex1_relholds "t"  _  ff.
 
 pred domain_elements o:list domain.
 domain_elements [a, b].
@@ -36,20 +38,20 @@ domain_elements [a, b].
 pred test1.
 test1 :- domain_elements D,
     [ (pi X\ pi S\ pi Xs\ combination X S Xs :- ex1_combination X S Xs, !)
-    , (pi P\ pi S\ pi Xs\ relation P S Xs :- ex1_relation P S Xs, !)
-    , (pi S\ pi Xs\ pi A\ funcval S Xs A :- ex1_funcval S Xs A, !)
-    , (pi S\ pi Xs\ pi A\ relholds S Xs :- ex1_relholds S Xs, !)
+    , (pi P\ pi S\ pi Xs\    relation P S Xs :-    ex1_relation P S Xs, !)
+    , (pi S\ pi Xs\ pi A\     funcval S Xs A :-     ex1_funcval S Xs A, !)
+    , (pi S\ pi Xs\ pi B\    relholds S Xs B :-    ex1_relholds S Xs B, !)
     ] =>
     run_tests
-    [ ok(holds (r x) D)
-    , ko(holds (r y) D)
-    , ko(holds (t x) D)
-    , ok(holds (t x !! r x) D)
-    , ko(holds (t x && r x) D)
-    , ok(holds (r y !! r x) D)
-    , ko(holds (r y && r x) D)
-    , ok(holds/c (ctx a\ formula/c (r a !! r x)) D)
-    , ko(holds/c (ctx a\ formula/c(r a && r x)) D)
+    [ ok_eq tt (holds (r x) D)
+    , ok_eq ff (holds (r y) D)
+    , ok_eq ff (holds (t x) D)
+    , ok_eq tt (holds (t x !! r x) D)
+    , ok_eq ff (holds (t x && r x) D)
+    , ok_eq tt (holds (r y !! r x) D)
+    , ok_eq ff (holds (r y && r x) D)
+    , ok_eq tt (holds/c (ctx a\ formula/c (r a !! r x)) D)
+    , ok_eq ff (holds/c (ctx a\ formula/c(r a && r x)) D)
     ].
 
 %%% ---------------------------------------------------------------------------
@@ -77,22 +79,24 @@ bool_funcval "1" [] tt.
 bool_funcval "+" [A, B] C :- orb  A B C.
 bool_funcval "*" [A, B] C :- andb A B C.
 
-pred bool_relholds i:string, i:list bool.
-bool_relholds "=" [A, B] :- iffb A B tt.
+pred bool_relholds i:string, i:list bool, o:bool.
+bool_relholds "=" [A, B] C :- iffb A B C.
 
 pred test2.
 test2 :-
     [ (pi X\ pi S\ pi Xs\ combination X S Xs :- bool_combination X S Xs, !)
-    , (pi P\ pi S\ pi Xs\ relation P S Xs :- bool_relation P S Xs, !)
-    , (pi S\ pi Xs\ pi A\ funcval S Xs A :- bool_funcval S Xs A, !)
-    , (pi S\ pi Xs\ pi A\ relholds S Xs :- bool_relholds S Xs, !)
+    , (pi P\ pi S\ pi Xs\    relation P S Xs :-    bool_relation P S Xs, !)
+    , (pi S\ pi Xs\ pi A\     funcval S Xs A :-     bool_funcval S Xs A, !)
+    , (pi S\ pi Xs\ pi B\    relholds S Xs B :-    bool_relholds S Xs B, !)
     ] =>
     run_tests
-    [ ok (holds/c (ctx A\ ctx B\
-                     formula/c (eqq (add A B) (add B A)))
-                  [ff, tt])
+    [ ok_eq tt
+        (holds/c (ctx A\ ctx B\
+                    formula/c (eqq (add A B) (add B A)))
+                 [ff, tt])
     ].
 
 main :-
-    test1,
-    test2.
+      test1
+    , test2
+    .
