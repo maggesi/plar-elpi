@@ -4,25 +4,33 @@ accumulate "fol".
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
-type x, y term.
-
-copy_term X X :- std.mem! [x,y] X, !.
-
-eval (rel "R" [x]) tt.
-eval (rel "R" [y]) ff.
-eval (rel "T"  _ ) ff.
+funcval "x" [] 0.
+relholds "R" [0].
 
 pred domain o:list term.
-domain [x,y].
+domain [0,1].
 
 main :- domain D, run_tests
-    [ ok(holds (rel "R" [x]) D)
-    , ko(holds (rel "R" [y]) D)
-    , ko(holds (rel "T" [x]) D)
-    , ok(holds (rel "T" [x] !! rel "R" [x]) D)
-    , ko(holds (rel "T" [x] && rel "R" [x]) D)
-    , ok(holds (rel "R" [y] !! rel "R" [x]) D)
-    , ko(holds (rel "R" [y] && rel "R" [x]) D)
-    , ok(holds/c (ctx a\ formula/c(rel "R" [a] !! rel "R" [x])) D)
-    , ko(holds/c (ctx a\ formula/c(rel "R" [a] && rel "R" [x])) D)
+    [ ok(holds (rel "R" [fn "x" []]) D)
+    , ko(holds (rel "R" [fn "y" []]) D)
+    , ko(holds (rel "T" [fn "x" []]) D)
+    , ok(holds (rel "T" [fn "x" []] !! rel "R" [fn "x" []]) D)
+    , ko(holds (rel "T" [fn "x" []] && rel "R" [fn "x" []]) D)
+    , ok(holds (rel "R" [fn "y" []] !! rel "R" [fn "x" []]) D)
+    , ko(holds (rel "R" [fn "y" []] && rel "R" [fn "x" []]) D)
+    , ok(holds/c (ctx a\ formula/c(rel "R" [a] !! rel "R" [fn "x" []])) D)
+    , ko(holds/c (ctx a\ formula/c(rel "R" [a] && rel "R" [fn "x" []])) D)
+
+%%% ---------------------------------------------------------------------------
+%%% Boolean interpretation.
+%%% ---------------------------------------------------------------------------
+
+    , ok ([ funcval "0" [] ff
+          , funcval "1" [] tt
+          , (pi X\ pi Y\ pi B\ funcval "+" [X, Y] B :- !, orb X Y B)
+          , (pi X\ pi Y\ pi B\ funcval "*" [X, Y] B :- !, andb X Y B)
+          , (pi X\ pi Y\ pi B\ relholds "=" [X, Y] :- !, iffb X Y tt) ]
+          => holds/c (ctx A\ ctx B\
+                        formula/c (rel "=" [fn "+" [A, B], fn "+" [B, A]]))
+                     [ff,tt])
     ].
