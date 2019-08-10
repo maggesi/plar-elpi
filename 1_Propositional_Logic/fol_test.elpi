@@ -49,7 +49,8 @@ eval (t X) B :- eval_t {termval X} B.
 
 main :-
     run_tests
-    [ ok_eq tt (holds (r x))
+    [ report "holds"
+    , ok_eq tt (holds (r x))
     , ok_eq ff (holds (r y))
     , ok_eq ff (holds (t x))
     , ok_eq tt (holds (t x !! r x))
