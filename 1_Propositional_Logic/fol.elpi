@@ -23,11 +23,6 @@ copy_formula (all P) (all P1) :- !,
 copy_formula (ex P) (ex P1) :- !,
     pi x\ copy_term x x => copy_formula (P x) (P1 x).
 
-pred is_true i:formula.
-:if "DBG:HOLDS"
-is_true P :- print "Enter:" (is_true P), fail.
-is_true P :- eval P tt.
-
 %%% ---------------------------------------------------------------------------
 %%% Interpretation of term and formulas.
 %%% ---------------------------------------------------------------------------
@@ -38,22 +33,16 @@ pred holds i:formula, o:bool.
 :if "DBG:HOLDS"
 holds P B :- print "Enter:" (holds P B), fail.
 holds P B :-
-    [ (pi p\ eval (all p) B :- !,
-         pi c\ sigma D\ domain D,
-           reflect (std.forall D
-                      (X \ (termval c X :- !) => is_true (p c)))
-                   B)
-    , (pi p\ eval (ex  p) B :- !,
-         pi c\ sigma D\ domain D,
-           reflect (std.exists! D
-                      (X \ (termval c X :- !) => is_true (p c)))
-                   B)
+    [ (eval (all Q) B :- !, domain D, forallb D (augment Q) B)
+    , (eval (ex  Q) B :- !, domain D, existsb D (augment Q) B)
     ] => eval P B.
+
+pred augment i:(term -> formula), i:A, o:bool.
+augment P X B :- pi c \ (termval c X :- !) => eval (P c) B.
 
 pred holds/c i:formula/c, o:bool.
 holds/c (formula/c P) B :- holds P B.
-holds/c (ctx P) B :-
-    pi c \ sigma D\ domain D,
-      reflect (std.forall D
-                 (X \ (termval c X :- !) => holds/c (P c) tt))
-              B.
+holds/c (ctx Q) B :- domain D, forallb D (augment/c Q) B.
+
+pred augment/c i:(term -> formula/c), i:A, o:bool.
+augment/c P X B :- pi c \ (termval c X :- !) => holds/c (P c) B.

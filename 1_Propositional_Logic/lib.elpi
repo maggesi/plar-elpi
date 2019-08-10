@@ -39,6 +39,16 @@ reflect _ ff.
 %%% Lists.
 %%% ---------------------------------------------------------------------------
 
+pred forallb i:list A, i:(A->bool->pred), o:bool.
+forallb [] _F tt.
+forallb [X|Xs] F B :- F X tt, !, forallb Xs F B.
+forallb _Xs _F ff.
+
+pred existsb i:list A, i:(A->bool->pred), o:bool.
+existsb [] _F ff.
+existsb [X|_] F tt :- F X tt, !.
+existsb [_|Xs] F B :- existsb Xs F B.
+
 pred std.exists! i:list A, i:(A -> prop).
 std.exists! [X|_] P :- P X, !.
 std.exists! [_|L] P :- std.exists! L P.
