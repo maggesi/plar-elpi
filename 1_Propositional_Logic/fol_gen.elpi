@@ -1,0 +1,60 @@
+%%% ===========================================================================
+%%% Generic infrastructure.
+%%% ===========================================================================
+
+accumulate "fol".
+
+%%% ---------------------------------------------------------------------------
+%%% Generic terms.
+%%% ---------------------------------------------------------------------------
+
+type fn string -> list term -> term.
+
+copy_term (fn S Xs) (fn S Ys) :- !, std.map Xs copy_term Ys.
+
+pred funcval i:string, i:list A, o:A.
+:if "DBG:HOLDS"
+funcval S Vs V :- print "Enter:" (funcval S Vs V), fail.
+
+pred termval i:term, o:A.
+:if "DBG:HOLDS"
+termval X A :- print "Enter:" (termval X A), fail.
+termval (fn S Xs) A :- !, funcval S {std.map Xs termval} A.
+
+%%% ---------------------------------------------------------------------------
+%%% Generic formulas.
+%%% ---------------------------------------------------------------------------
+
+type atom string -> list term -> formula.
+
+copy_formula (atom S Xs) (atom S Ys) :- !, std.map Xs copy_term Ys.
+
+pred atomval i:string, i:list A, o:bool.
+:if "DBG:HOLDS"
+atomval S As B :- print "Enter:" (atomval S As B), fail.
+
+eval (atom S Xs) B :- !, atomval S {std.map Xs termval} B.
+
+%%% ---------------------------------------------------------------------------
+%%% Boolean interpretation.
+%%% ---------------------------------------------------------------------------
+
+funcval "0" [] ff. 
+funcval "0" [] tt. 
+funcval "+" [A, B] C :- orb  A B C. 
+funcval "*" [A, B] C :- andb A B C. 
+
+atomval "=" [A, B] C :- iffb A B C.
+
+%%% ---------------------------------------------------------------------------
+%%% Tests.
+%%% ---------------------------------------------------------------------------
+
+main :-
+    run_tests
+    [ ok_eq tt
+        (holds/c (ctx A\ ctx B\
+                    formula/c (atom "=" [fn "+" [A, B],
+                                         fn "+" [B, A]]))
+                 [ff, tt])
+    ].

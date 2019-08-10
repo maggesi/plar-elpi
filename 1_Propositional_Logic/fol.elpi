@@ -4,44 +4,13 @@
 
 accumulate "prop".
 
-%%% ---------------------------------------------------------------------------
-%%% Syntax and semantics of terms.
-%%% ---------------------------------------------------------------------------
-
 % Terms.
 kind term type.
 
-% Composed terms (combinations).
-:index(1 1)
-pred combination o:term, o:string, o:list term.
-
-% Mapping on terms.
 pred copy_term i:term, o:term.
-copy_term X Y :- combination X S Xs, !,
-                 std.map Xs copy_term Ys,
-                 combination Y S Ys.
-
-% Evaluation of functors.
-pred funcval i:string, i:list A, o:A.
-:if "DBG:HOLDS"
-funcval S Vs V :- print "Enter:" (funcval S Vs V), fail.
-
-% Evaluation of terms (recursive).
-pred termval i:term, o:A.
-:if "DBG:HOLDS"
-termval X V :- print "Enter:" (termval X V), fail.
-termval X V :- combination X S Xs, funcval S {std.map Xs termval} V.
-
-%%% ---------------------------------------------------------------------------
-%%% Syntax of formulas.
-%%% ---------------------------------------------------------------------------
 
 % Quantifiers.
 type all, ex (term -> formula) -> formula.
-
-% Atomic formulas.
-:index(1 1)
-pred relation o:formula, o:string, o:list term.
 
 % Closed formulas.
 kind formula/c type.
@@ -53,27 +22,15 @@ copy_formula (all P) (all P1) :- !,
     pi x\ copy_term x x => copy_formula (P x) (P1 x).
 copy_formula (ex P) (ex P1) :- !,
     pi x\ copy_term x x => copy_formula (P x) (P1 x).
-copy_formula R T :- relation R S Xs, !,
-                    std.map Xs copy_term Ys,
-                    relation T S Ys.
-
-% Interpretation of atomic formulas.
-pred relholds i:string, i:list A, o:bool.
-:if "DBG:HOLDS"
-relholds S Vs B :- print "Enter:" (relholds S Vs B), fail.
-
-eval P B :- relation P S Xs, !,
-            relholds S {std.map Xs termval} B.
-
-pred std.exists! i:list A, i:(A -> prop).
-std.exists! [X|_] P :- P X, !.
-std.exists! [_|L] P :- std.exists! L P.
 
 pred is_true i:formula.
 :if "DBG:HOLDS"
 is_true P :- print "Enter:" (is_true P), fail.
 is_true P :- eval P tt.
 
+%%% ---------------------------------------------------------------------------
+%%% Interpretation of term and formulas.
+%%% ---------------------------------------------------------------------------
 
 pred holds i:formula, i:list A, o:bool.
 :if "DBG:HOLDS"
