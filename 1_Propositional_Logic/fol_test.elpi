@@ -8,21 +8,21 @@ accumulate "fol".
 %%% Model.
 %%% ---------------------------------------------------------------------------
 
-kind domain type.
-type a, b domain.
+kind dom type.
+type a, b dom.
 
-pred domain_elements o:list domain.
-domain_elements [a, b].
+pred domain o:list dom.
+domain [a, b].
 
-pred eval_f i:domain, o:domain.
+pred eval_f i:dom, o:dom.
 eval_f a b.
 eval_f b a.
 
-pred eval_r i:domain, o:bool.
+pred eval_r i:dom, o:bool.
 eval_r a tt.
 eval_r b ff.
 
-pred eval_t i:domain, o:bool.
+pred eval_t i:dom, o:bool.
 eval_t _X ff.
 
 type x, y term.
@@ -34,7 +34,7 @@ type r, t term -> formula.
 %%% ---------------------------------------------------------------------------
 
 % Terms.
-pred termval i:term, o:domain.
+pred termval i:term, o:dom.
 termval x a.
 termval y b.
 termval (f X) A :- eval_f {termval X} A.
@@ -47,17 +47,17 @@ eval (t X) B :- eval_t {termval X} B.
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
-main :- domain_elements D,
+main :-
     run_tests
-    [ ok_eq tt (holds (r x) D)
-    , ok_eq ff (holds (r y) D)
-    , ok_eq ff (holds (t x) D)
-    , ok_eq tt (holds (t x !! r x) D)
-    , ok_eq ff (holds (t x && r x) D)
-    , ok_eq tt (holds (r y !! r x) D)
-    , ok_eq ff (holds (r y && r x) D)
-    , ok_eq ff (holds (all a\ r (f a)) D)
-    , ok_eq tt (holds (ex  a\ r (f a)) D)
-    , ok_eq tt (holds/c (ctx a\ formula/c (r a !! r x)) D)
-    , ok_eq ff (holds/c (ctx a\ formula/c(r a && r x)) D)
+    [ ok_eq tt (holds (r x))
+    , ok_eq ff (holds (r y))
+    , ok_eq ff (holds (t x))
+    , ok_eq tt (holds (t x !! r x))
+    , ok_eq ff (holds (t x && r x))
+    , ok_eq tt (holds (r y !! r x))
+    , ok_eq ff (holds (r y && r x))
+    , ok_eq ff (holds (all a\ r (f a)))
+    , ok_eq tt (holds (ex  a\ r (f a)))
+    , ok_eq tt (holds/c (ctx a\ formula/c (r a !! r x)))
+    , ok_eq ff (holds/c (ctx a\ formula/c (r a && r x)))
     ].

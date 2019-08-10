@@ -39,6 +39,8 @@ eval (atom S Xs) B :- !, atomval S {std.map Xs termval} B.
 %%% Boolean interpretation.
 %%% ---------------------------------------------------------------------------
 
+domain [ff, tt].
+
 funcval "0" [] ff. 
 funcval "0" [] tt. 
 funcval "+" [A, B] C :- orb  A B C. 
@@ -55,6 +57,5 @@ main :-
     [ ok_eq tt
         (holds/c (ctx A\ ctx B\
                     formula/c (atom "=" [fn "+" [A, B],
-                                         fn "+" [B, A]]))
-                 [ff, tt])
+                                         fn "+" [B, A]])))
     ].

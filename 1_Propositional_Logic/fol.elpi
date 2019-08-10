@@ -32,22 +32,28 @@ is_true P :- eval P tt.
 %%% Interpretation of term and formulas.
 %%% ---------------------------------------------------------------------------
 
-pred holds i:formula, i:list A, o:bool.
+pred domain o:list A.
+
+pred holds i:formula, o:bool.
 :if "DBG:HOLDS"
-holds P D B :- print "Enter:" (holds P D B), fail.
-holds P D B :-
+holds P B :- print "Enter:" (holds P B), fail.
+holds P B :-
     [ (pi p\ eval (all p) B :- !,
-         pi c \
-           reflect (std.forall  D (X \ (termval c X :- !) => is_true (p c)))
+         pi c\ sigma D\ domain D,
+           reflect (std.forall D
+                      (X \ (termval c X :- !) => is_true (p c)))
                    B)
     , (pi p\ eval (ex  p) B :- !,
-         pi c \ reflect (std.exists! D (X \ (termval c X :- !) => is_true (p c)))
-                        B)
+         pi c\ sigma D\ domain D,
+           reflect (std.exists! D
+                      (X \ (termval c X :- !) => is_true (p c)))
+                   B)
     ] => eval P B.
 
-pred holds/c i:formula/c, i:list A, o:bool.
-holds/c (formula/c P) D B :- holds P D B.
-holds/c (ctx P) D B :-
-    pi c \
-      reflect (std.forall D (X \ (termval c X :- !) => holds/c (P c) D tt))
+pred holds/c i:formula/c, o:bool.
+holds/c (formula/c P) B :- holds P B.
+holds/c (ctx P) B :-
+    pi c \ sigma D\ domain D,
+      reflect (std.forall D
+                 (X \ (termval c X :- !) => holds/c (P c) tt))
               B.

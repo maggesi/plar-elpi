@@ -16,18 +16,17 @@ type eqq term -> term -> formula.
 %%% Model.
 %%% ---------------------------------------------------------------------------
 
+domain [ff, tt].
+
 pred termval i:term, o:bool.
 termval zero ff.
 termval one tt.
 termval (add X Y) B :- orb  {termval X} {termval Y} B.
 termval (mul X Y) B :- andb {termval X} {termval Y} B.
 
-holds (eqq X Y) _D B :- iffb {termval X} {termval Y} B.
+holds (eqq X Y) B :- iffb {termval X} {termval Y} B.
 
 main :-
     run_tests
-    [ ok_eq tt
-        (holds/c (ctx X\ ctx Y\
-                    formula/c (eqq (add X Y) (add Y X)))
-                 [ff, tt])
+    [ ok_eq tt (holds/c (ctx X\ ctx Y\ formula/c (eqq (add X Y) (add Y X))))
     ].
