@@ -77,32 +77,53 @@ type ok_eq A -> (A -> prop) -> test.
 type report string -> test.
 
 pred run_tests i:(list test).
-run_tests [] :- print "run_tests: Done!".
-run_tests [T|Ts] :- run_test T, run_tests Ts.
+run_tests Tests :-
+       print "run_tests: Start." ,
+       run_tests_iter Tests 0 0 S 0 N,
+       print "Passed" S "out of" N.
 
-pred run_test i:test.
-run_test (ok P) :- test_ok P.
-run_test (ko P) :- test_ko P.
-run_test (ok_eq R P) :- test_ok_eq R P.
-run_test (report S) :- print S.
+pred run_tests_iter i:(list test), i:int, i:int, o:int, i:int, o:int.
+% run_tests_iter Tests I S S1 N N1.
+% N : tot num of tests (do not count report).
+% I : index of the test.
+% S : num successes.
+run_tests_iter [] _I S S N N :- print "run_tests: Done!".
+run_tests_iter [T|Ts] I S S2 N N2 :-
+       run_test T I S S1 N N1,
+       J is I + 1,
+       run_tests_iter Ts J S1 S2 N1 N2.
 
-pred test_ok i:prop.
-test_ok P :- print "Test ok:" P, P, !, print "Exit ok:" P.
-test_ok P :- print "  !!! TEST OK FAILED:\n " P "\n  !!!".
+pred run_test i:test, i:int, i:int, o:int, i:int, o:int.
+run_test (report Msg) _I S S  N N  :- print Msg.
+run_test (ok P)        I S S1 N N1 :- N1 is N + 1, test_ok P I S S1.
+run_test (ko P)        I S S1 N N1 :- N1 is N + 1, test_ko P I S S1.
+run_test (ok_eq R P)   I S S1 N N1 :- N1 is N + 1, test_ok_eq R P I S S1.
 
-pred test_ko i:prop.
-test_ko P :- print "Test ko:" P, P, !, print "  !!! TEST KO FAILED:\n " P.
-test_ko P :- print "Exit ko:" P.
+pred test_ok i:prop, i:int, i:int, o:int.
+test_ok P I S S1 :- print I "Test ok:" P, P, !,
+                    S1 is S + 1, print I "Exit ok:" P.
+test_ok P I S S  :- print "  !!! TEST OK FAILED:" I, print P.
+
+pred test_ko i:prop, i:int, i:int, o:int.
+test_ko P I S S  :- print I "Test ko:" P, P, !,
+                    print "  !!! TEST KO FAILED:" I, print P.
+test_ko P I S S1 :- S1 is S + 1, print I "Exit ko:" P.
 
 pred equal i:A, i:A.
 equal A A.
 
-pred test_ok_eq i:A, i:(A -> prop).
-test_ok_eq R P :- print "Test ok eq:" (P R),
-                  sigma X\ P X, !,
-                  if (equal R X)
-                     (print "Exit ok eq:" (P R))
-                     (print "  !!! TEST OK EQ FAILED\n  !!! Expected:"
-                            (P R) "\n  !!! Obtained:" (P X)).
-test_ok_eq R P :- print "  !!! TEST OK EQ FAILED:\n  !!! Expected:"
-                        (P R) "\n  !!! FAILED".
+pred test_ok_eq i:A, i:(A -> prop), i:int, i:int, o:int.
+test_ok_eq R P I S S1 :-
+       print I "Test ok eq:" (P R),
+       sigma X\ P X, !,
+       if (equal R X)
+              (S1 is S + 1,
+               print I "Exit ok eq:" (P R))
+              (S1 is S,
+               print "  !!! TEST OK EQ FAILED:" I,
+               print "  !!! Expected:" (P R),
+               print "  !!! Obtained:" (P X)).
+test_ok_eq R P I S S :-
+       print "  !!! TEST OK EQ FAILED:" I,
+       print "  !!! Expected:" (P R),
+       print "  !!! FAILED".
