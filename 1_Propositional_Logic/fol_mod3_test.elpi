@@ -5,43 +5,40 @@
 accumulate "fol".
 
 %%% ---------------------------------------------------------------------------
-%%% Model.
+%%% Model, language, interpretation.
 %%% ---------------------------------------------------------------------------
 
-% pred domain i:list int.
+type mod int -> int -> int.
+
 domain [0,1,2].
-
-pred mul3 i:int, i:int, o:int.
-mul3 0 N 0 :- !.
-mul3 N 0 0 :- !.
-mul3 1 N N :- !.
-mul3 N 1 N.
-mul3 2 2 1.
-
-pred eq3 i:int, i:int, o:bool.
-eq3 N N tt :- domain D, std.mem D N, !.
-eq3 M N ff :- domain D, std.mem D M, std.mem D N.
-
-%%% ---------------------------------------------------------------------------
-%%% Language.
-%%% ---------------------------------------------------------------------------
 
 type zero, one, two term.
 type add, mul term -> term -> term.
 type eq term -> term -> formula.
 
-%%% ---------------------------------------------------------------------------
-%%% Interpretation.
-%%% ---------------------------------------------------------------------------
+namespace mod3_interp
+{
+    pred eq/3 i:int, i:int, o:bool.
+    eq/3 M N B :-
+        P is (M - N) mod 3,
+        if (P = 0) (B = tt) (B = ff).
 
-pred termval i:term, o:int.
-termval zero 0.
-termval one  1.
-termval two  2.
-termval (add X Y) N :- N is ({termval X} + {termval Y}) mod 3.
-termval (mul X Y) N :- N is ({termval X} * {termval Y}) mod 3.
+    pred termval/3 i:term, o:int.
+    termval/3 zero 0.
+    termval/3 one  1.
+    termval/3 two  2.
+    termval/3 (add X Y) N :- N is {termval X} + {termval Y}.
+    termval/3 (mul X Y) N :- N is {termval X} * {termval Y}.
 
-eval (eq X Y) B :- reflect (0 is ({termval X} - {termval Y}) mod 3) B.
+    pred atomval/3 i:formula, o:bool.
+    atomval/3 (eq X Y) B :- !, termval X M, termval Y N, eq/3 M N B.
+}
+
+pred holds/3 i:formula, o:bool.
+holds/3 P B :-
+    [ (pi X \ pi A \ termval X A :- mod3_interp.termval/3 X A, !)
+    , (pi P \ pi B \ eval P B    :- mod3_interp.atomval/3 P B, !)
+    ] => holds P B.
 
 %%% ---------------------------------------------------------------------------
 %%% Tests.
@@ -50,9 +47,12 @@ eval (eq X Y) B :- reflect (0 is ({termval X} - {termval Y}) mod 3) B.
 main :-
     run_tests
     [ report "Mod 3"
-    , ok_eq tt (holds (ex X\ eq (add two one) zero))
-    , ok_eq ff (holds (ex X\ eq (add two two) zero))
-    , ok_eq tt (holds (ex X\ eq (add X one) two))
-    , ok_eq tt (holds (all X\ eq (mul X zero) zero))
-    , ok_eq ff (holds (ex X\ eq (mul X zero) one))
+    , ok_eq tt (holds/3 (eq (add two one) zero))
+    , ok_eq ff (holds/3 (eq (add two two) zero))
+    , ok_eq tt (holds/3 (eq (mul two two)  one))
+    , ok_eq ff (holds/3 (eq (mul two two) zero))
+    , ok_eq tt (holds/3 (all X \ eq (add X zero)   X ))
+    , ok_eq tt (holds/3 (ex  X \ eq (add X  one)  two))
+    , ok_eq tt (holds/3 (all X \ eq (mul X zero) zero))
+    , ok_eq ff (holds/3 (ex  X \ eq (mul X zero)  one))
     ].
