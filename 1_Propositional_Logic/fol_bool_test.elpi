@@ -10,7 +10,7 @@ accumulate "fol".
 
 type zero, one term.
 type add, mul term -> term -> term.
-type eqq term -> term -> formula.
+type eq term -> term -> formula.
 
 %%% ---------------------------------------------------------------------------
 %%% Model.
@@ -24,9 +24,9 @@ termval one tt.
 termval (add X Y) B :- orb  {termval X} {termval Y} B.
 termval (mul X Y) B :- andb {termval X} {termval Y} B.
 
-holds (eqq X Y) B :- iffb {termval X} {termval Y} B.
+holds (eq X Y) B :- iffb {termval X} {termval Y} B.
 
 main :-
     run_tests
-    [ ok_eq tt (holds/c (ctx X\ ctx Y\ formula/c (eqq (add X Y) (add Y X))))
+    [ ok_eq tt (holds/c (ctx X\ ctx Y\ formula/c (eq (add X Y) (add Y X))))
     ].
