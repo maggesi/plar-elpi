@@ -34,7 +34,6 @@ type r, t term -> formula.
 %%% ---------------------------------------------------------------------------
 
 % Terms.
-pred termval i:term, o:dom.
 termval x a.
 termval y b.
 termval (f X) A :- eval_f {termval X} A.

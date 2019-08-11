@@ -18,7 +18,6 @@ type eq term -> term -> formula.
 
 domain [ff, tt].
 
-pred termval i:term, o:bool.
 termval zero ff.
 termval one tt.
 termval (add X Y) B :- orb  {termval X} {termval Y} B.
