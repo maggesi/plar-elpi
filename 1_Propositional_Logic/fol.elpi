@@ -35,8 +35,9 @@ pred holds i:formula, o:bool.
 :if "DBG:HOLDS"
 holds P B :- print "Enter:" (holds P B), fail.
 holds P B :-
-    [ (eval (all Q) B :- !, domain D, forallb D (augment Q) B)
-    , (eval (ex  Q) B :- !, domain D, existsb D (augment Q) B)
+    domain D,
+    [ (pi Q \ pi B \ eval (all Q) B :- !, forallb D (augment Q) B)
+    , (pi Q \ pi B \ eval (ex  Q) B :- !, existsb D (augment Q) B)
     ] => eval P B.
 
 pred augment i:(term -> formula), i:A, o:bool.
