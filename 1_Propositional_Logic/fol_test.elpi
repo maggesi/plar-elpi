@@ -33,6 +33,14 @@ type r, t term -> formula.
 %%% Interpretation.
 %%% ---------------------------------------------------------------------------
 
+% Iteration.
+copy_term x x.
+copy_term y y.
+copy_term (f X) (f X1) :- copy_term X X1.
+
+copy_formula (r X) (r X1) :- copy_term X X1.
+copy_formula (t X) (t X1) :- copy_term X X1.
+
 % Terms.
 termval x a.
 termval y b.
@@ -60,4 +68,10 @@ main :-
     , ok_eq tt (holds (ex  a\ r (f a)))
     , ok_eq tt (holds/c (ctx a\ formula/c (r a !! r x)))
     , ok_eq ff (holds/c (ctx a\ formula/c (r a && r x)))
+    , report "simplify"
+    , ok_eq (all X \ r X) (simplify (all X \ ex U \ r X))
+    , ok_eq (all X \ r X && t y) (simplify (all X \ ex U \ r X && ex Y \ t y))
+    , ok_eq (neg (r x) !! neg (r y)) (nnf (neg (r x && r y)))
+    , ok_eq ((ex X \ neg (r X)) !! r y)
+            (nnf (neg ((all X \ r X) && ex X \ neg (r y))))
     ].
