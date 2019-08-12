@@ -57,17 +57,17 @@ eval (t X) B :- eval_t {termval X} B.
 main :-
     run_tests
     [ report "holds"
-    , ok_eq tt (holds (r x))
-    , ok_eq ff (holds (r y))
-    , ok_eq ff (holds (t x))
-    , ok_eq tt (holds (t x !! r x))
-    , ok_eq ff (holds (t x && r x))
-    , ok_eq tt (holds (r y !! r x))
-    , ok_eq ff (holds (r y && r x))
-    , ok_eq ff (holds (all a\ r (f a)))
-    , ok_eq tt (holds (ex  a\ r (f a)))
-    , ok_eq tt (holds/c (ctx a\ formula/c (r a !! r x)))
-    , ok_eq ff (holds/c (ctx a\ formula/c (r a && r x)))
+    , okb (holds (r x))
+    , kob (holds (r y))
+    , kob (holds (t x))
+    , okb (holds (t x !! r x))
+    , kob (holds (t x && r x))
+    , okb (holds (r y !! r x))
+    , kob (holds (r y && r x))
+    , kob (holds (all a\ r (f a)))
+    , okb (holds (ex  a\ r (f a)))
+    , okb (holds/c (ctx a\ formula/c (r a !! r x)))
+    , kob (holds/c (ctx a\ formula/c (r a && r x)))
     , report "simplify"
     , ok_eq (all X \ r X) (simplify (all X \ ex U \ r X))
     , ok_eq (all X \ r X && t y) (simplify (all X \ ex U \ r X && ex Y \ t y))

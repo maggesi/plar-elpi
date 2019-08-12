@@ -53,7 +53,7 @@ atomval "=" [A, B] C :- iffb A B C.
 
 main :-
     run_tests
-    [ ok_eq tt
+    [ okb
         (holds/c (ctx A\ ctx B\
                     formula/c (atom "=" [fn "+" [A, B],
                                          fn "+" [B, A]])))

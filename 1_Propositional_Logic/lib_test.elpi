@@ -20,9 +20,9 @@ fun 2 tt.
 main :-
     run_tests
     [ report "forallb"
-    , ok_eq tt (forallb [0, 2] fun)
-    , ok_eq ff (forallb [0, 1] fun)
+    , okb (forallb [0, 2] fun)
+    , kob (forallb [0, 1] fun)
     , report "existsb"
-    , ok_eq tt (existsb [0, 1] fun)
-    , ok_eq ff (existsb [1] fun)
+    , okb (existsb [0, 1] fun)
+    , kob (existsb [1] fun)
     ].

@@ -73,6 +73,7 @@ union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
 
 kind test type.
 type ok, ko prop -> test.
+type okb, kob (bool -> prop) -> test.
 type ok_eq A -> (A -> prop) -> test.
 type report string -> test.
 
@@ -89,14 +90,18 @@ pred run_tests_iter i:(list test), i:int, i:int, o:int, i:int, o:int.
 % S : num successes.
 run_tests_iter [] _I S S N N :- print "run_tests: Done!".
 run_tests_iter [T|Ts] I S S2 N N2 :-
-       run_test T I S S1 N N1,
+       run_test T I S S1 N N1, !,
        J is I + 1,
        run_tests_iter Ts J S1 S2 N1 N2.
+run_tests_iter [T|_] _I _S _S1 _N _N1 :-
+       std.fatal-error-w-data "Unknown test type" T.
 
 pred run_test i:test, i:int, i:int, o:int, i:int, o:int.
 run_test (report Msg) _I S S  N N  :- print Msg.
 run_test (ok P)        I S S1 N N1 :- N1 is N + 1, test_ok P I S S1.
 run_test (ko P)        I S S1 N N1 :- N1 is N + 1, test_ko P I S S1.
+run_test (okb P)       I S S1 N N1 :- N1 is N + 1, test_okb P I S S1.
+run_test (kob P)       I S S1 N N1 :- N1 is N + 1, test_kob P I S S1.
 run_test (ok_eq R P)   I S S1 N N1 :- N1 is N + 1, test_ok_eq R P I S S1.
 
 pred test_ok i:prop, i:int, i:int, o:int.
@@ -105,12 +110,45 @@ test_ok P I S S1 :- print I "Test ok:" P, P, !,
 test_ok P I S S  :- print "  !!! TEST OK FAILED:" I, print P.
 
 pred test_ko i:prop, i:int, i:int, o:int.
-test_ko P I S S  :- print I "Test ko:" P, P, !,
+test_ko P I S S  :- print I "Test ko:" P,
+                    P, !,
                     print "  !!! TEST KO FAILED:" I, print P.
 test_ko P I S S1 :- S1 is S + 1, print I "Exit ko:" P.
 
 pred equal i:A, i:A.
 equal A A.
+
+pred test_okb i:(bool -> prop), i:int, i:int, o:int.
+test_okb P I S S1 :-
+       print I "Test okb:" P,
+       sigma X\ P X, !,
+       if (equal tt X)
+              (S1 is S + 1,
+               print I "Exit okb:" P)
+              (S1 is S,
+               print "  !!! TEST OKB FAILED:" I,
+               print "  !!! Term:" P,
+               print "  !!! Returned ff").
+test_okb P I S S :-
+       print "  !!! TEST OKB FAILED:" I,
+       print "  !!! Term:" P,
+       print "  !!! FAILED".
+
+pred test_kob i:(bool -> prop), i:int, i:int, o:int.
+test_kob P I S S1 :-
+       print I "Test kob:" P,
+       sigma X\ P X, !,
+       if (equal ff X)
+              (S1 is S + 1,
+               print I "Exit kob:" P)
+              (S1 is S,
+               print "  !!! TEST KOB FAILED:" I,
+               print "  !!! Term:" P,
+               print "  !!! Returned tt").
+test_kob P I S S :-
+       print "  !!! TEST KOB FAILED:" I,
+       print "  !!! Term:" P,
+       print "  !!! FAILED".
 
 pred test_ok_eq i:A, i:(A -> prop), i:int, i:int, o:int.
 test_ok_eq R P I S S1 :-

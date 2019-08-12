@@ -27,5 +27,5 @@ holds (eq X Y) B :- iffb {termval X} {termval Y} B.
 
 main :-
     run_tests
-    [ ok_eq tt (holds/c (ctx X\ ctx Y\ formula/c (eq (add X Y) (add Y X))))
+    [ okb (holds/c (ctx X\ ctx Y\ formula/c (eq (add X Y) (add Y X))))
     ].

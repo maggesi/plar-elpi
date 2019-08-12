@@ -47,12 +47,12 @@ holds/3 P B :-
 main :-
     run_tests
     [ report "Mod 3"
-    , ok_eq tt (holds/3 (eq (add two one) zero))
-    , ok_eq ff (holds/3 (eq (add two two) zero))
-    , ok_eq tt (holds/3 (eq (mul two two)  one))
-    , ok_eq ff (holds/3 (eq (mul two two) zero))
-    , ok_eq tt (holds/3 (all X \ eq (add X zero)   X ))
-    , ok_eq tt (holds/3 (ex  X \ eq (add X  one)  two))
-    , ok_eq tt (holds/3 (all X \ eq (mul X zero) zero))
-    , ok_eq ff (holds/3 (ex  X \ eq (mul X zero)  one))
+    , okb (holds/3 (eq (add two one) zero))
+    , kob (holds/3 (eq (add two two) zero))
+    , okb (holds/3 (eq (mul two two)  one))
+    , kob (holds/3 (eq (mul two two) zero))
+    , okb (holds/3 (all X \ eq (add X zero)   X ))
+    , okb (holds/3 (ex  X \ eq (add X  one)  two))
+    , okb (holds/3 (all X \ eq (mul X zero) zero))
+    , kob (holds/3 (ex  X \ eq (mul X zero)  one))
     ].

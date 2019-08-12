@@ -6,11 +6,11 @@ atomic P :- std.mem! [p,q,r] P.
 
 main :- run_tests
     [ report "Test eval"
-    , (ok_eq ff R \
+    , (kob R \
          [ (eval p tt :- !)
          , (eval q ff :- !)
          ] => eval (p && q) R)
-    , (ok_eq tt R \
+    , (okb R \
          [(eval p tt :- !)
          , (eval q tt :- !)
          ] => eval (p && q) R)
