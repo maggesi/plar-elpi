@@ -5,12 +5,12 @@ type p, q, r formula.
 atomic P :- std.mem! [p,q,r] P.
 
 main :- run_tests
-    [ report "Test copy_formula"
+    [ report "Test copy/fm"
     , (ok_eq (q && r !! r) R \
-         [ (copy_formula p q :- !)
-         , (copy_formula q r :- !)
-         , (pi X\ copy_formula X X :- atomic X)
-         ] => copy_formula (p && q !! r) R)
+         [ (copy/fm p q :- !)
+         , (copy/fm q r :- !)
+         , (pi X\ copy/fm X X :- atomic X)
+         ] => copy/fm (p && q !! r) R)
     , report "Test onatoms"
     , (ok_eq (r && q !! p) R \
          pi F\

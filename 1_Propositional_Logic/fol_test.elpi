@@ -34,12 +34,12 @@ type r, t term -> formula.
 %%% ---------------------------------------------------------------------------
 
 % Iteration.
-copy_term x x.
-copy_term y y.
-copy_term (f X) (f X1) :- copy_term X X1.
+copy/tm x x.
+copy/tm y y.
+copy/tm (f X) (f X1) :- copy/tm X X1.
 
-copy_formula (r X) (r X1) :- copy_term X X1.
-copy_formula (t X) (t X1) :- copy_term X X1.
+copy/fm (r X) (r X1) :- copy/tm X X1.
+copy/fm (t X) (t X1) :- copy/tm X X1.
 
 % Terms.
 termval x a.

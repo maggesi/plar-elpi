@@ -1,0 +1,69 @@
+%%% ---------------------------------------------------------------------------
+%%% Prenex normal form.
+%%% ---------------------------------------------------------------------------
+
+% pred pullq i:formula, o:formula.
+% pullq (all P && all Q) (all R) :- !, pi c \ copy/tm c c => copy/fm (P c && Q c) (R c).
+% pullq (ex  P !! ex  Q) (ex  R) :- !, pi c \ copy/tm c c => copy/fm (P c !! Q c) (R c).
+% pullq (all P &&     Q) (all R) :- !, pi c \ copy/tm c c => copy/fm (P c && Q  ) (R c).
+% pullq (ex  P &&     Q) (ex  R) :- !, pi c \ copy/tm c c => copy/fm (P c && Q  ) (R c).
+% pullq (all P !!     Q) (all R) :- !, pi c \ copy/tm c c => copy/fm (P c !! Q  ) (R c).
+% pullq (ex  P !!     Q) (ex  R) :- !, pi c \ copy/tm c c => copy/fm (P c !! Q  ) (R c).
+% pullq (    P && all Q) (all R) :- !, pi c \ copy/tm c c => copy/fm (P   && Q c) (R c).
+% pullq (    P && ex  Q) (ex  R) :- !, pi c \ copy/tm c c => copy/fm (P   && Q c) (R c).
+% pullq (    P !! all Q) (all R) :- !, pi c \ copy/tm c c => copy/fm (P   !! Q c) (R c).
+% pullq (    P !! ex  Q) (ex  R) :- !, pi c \ copy/tm c c => copy/fm (P   !! Q c) (R c).
+
+% pred prenex i:formula, o:formula.
+% prenex P P1 :-
+%     (pi P \ pi P1 \ copy/fm P P1 :- pullq P P1, !)
+%     => copy/fm P P1.
+
+pred pnf i:formula, o:formula.
+pnf P P1 :-
+    simplify P Q1,
+    nnf Q1 Q2,
+    prenex Q2 P1.
+
+main :-
+    run_tests
+    [  report "pnf"
+    , ok_eq (neg (all X \ r X) !! r x && r x)
+            (simplify (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x)))
+    , ok_eq ((ex X \ neg (r X)) !! r x && t x)
+            (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
+    ].
+
+
+
+
+
+% %%% ---------------------------------------------------------------------------
+% %%% Substitution in terms.
+% %%% ---------------------------------------------------------------------------
+
+% pred tsubst i:term, i:(term -> term -> prop), i:term.
+% tsubst X F Y :-
+%     (pi X \ pi Y \ copy/tm X Y :- F X Y, !)
+%     => copy/tm X Y.
+
+% %%% ---------------------------------------------------------------------------
+% %%% Closed terms.
+% %%% ---------------------------------------------------------------------------
+
+% kind term/c type.
+% type term/c term -> term/c.
+% type fvar (term -> term/c) -> term/c.
+
+% pred copy/tm/c i:term/c, o:term/c.
+% copy/tm/c (term/c X) (term/c X1) :- copy/tm X X1.
+% copy/tm/c (fvar X) (fvar X1) :-
+%     pi c \ copy/tm c c => copy/tm/c (X c) (X1 c).
+
+% pred tsubst/c i:term/c i:(term -> term/c -> prop), i:term/c.
+% tsubst/c X F Y :-
+%     [
+%         (pi X \ pi Y \
+%             copy/tm/c (fvar X) (fvar Y) :-
+%                 pi c \ copy/tm/c (X c) (Y c))
+%     ]

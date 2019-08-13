@@ -10,7 +10,7 @@ accumulate "fol".
 
 type fn string -> list term -> term.
 
-copy_term (fn S Xs) (fn S Ys) :- !, std.map Xs copy_term Ys.
+copy/tm (fn S Xs) (fn S Ys) :- !, std.map Xs copy/tm Ys.
 
 pred funcval i:string, i:list A, o:A.
 :if "DBG:HOLDS"
@@ -26,7 +26,7 @@ termval (fn S Xs) A :- !, funcval S {std.map Xs termval} A.
 
 type atom string -> list term -> formula.
 
-copy_formula (atom S Xs) (atom S Ys) :- !, std.map Xs copy_term Ys.
+copy/fm (atom S Xs) (atom S Ys) :- !, std.map Xs copy/tm Ys.
 
 pred atomval i:string, i:list A, o:bool.
 :if "DBG:HOLDS"
