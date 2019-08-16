@@ -21,6 +21,9 @@ type ctx (term -> formula/c) -> formula/c.
 copy/fm (all P) (all P1) :- !, pi x\ copy/tm x x => copy/fm (P x) (P1 x).
 copy/fm (ex  P) (ex  P1) :- !, pi x\ copy/tm x x => copy/fm (P x) (P1 x).
 
+dcopy/fm (all P) P1 :- pi x\ copy/tm x x => (dcopy/fm (P x) R, copy1/fm R P1).
+dcopy/fm (ex  P) P1 :- pi x\ copy/tm x x => (dcopy/fm (P x) R, copy1/fm R P1).
+
 %%% ---------------------------------------------------------------------------
 %%% Interpretation of term and formulas.
 %%% ---------------------------------------------------------------------------
@@ -91,3 +94,30 @@ nnf P P1 :-
     , (pi P \ pi P1 \ copy/fm (neg P) P1 :- negate       P P1, !)
     , (pi P \ pi P1 \ copy/fm      P  P1 :- split_imp    P P1, !)
     ] => copy/fm P P1.
+
+%%% ---------------------------------------------------------------------------
+%%% Prenex normal form.
+%%% ---------------------------------------------------------------------------
+
+pred pullq i:formula, o:formula.
+pullq (all P && all Q) (all R) :- !, pi c \ R c = (P c && Q c).
+pullq (ex  P !! ex  Q) (ex  R) :- !, pi c \ R c = (P c !! Q c).
+pullq (all P &&     Q) (all R) :- !, pi c \ R c = (P c && Q  ).
+pullq (ex  P &&     Q) (ex  R) :- !, pi c \ R c = (P c && Q  ).
+pullq (all P !!     Q) (all R) :- !, pi c \ R c = (P c !! Q  ).
+pullq (ex  P !!     Q) (ex  R) :- !, pi c \ R c = (P c !! Q  ).
+pullq (    P && all Q) (all R) :- !, pi c \ R c = (P   && Q c).
+pullq (    P && ex  Q) (ex  R) :- !, pi c \ R c = (P   && Q c).
+pullq (    P !! all Q) (all R) :- !, pi c \ R c = (P   !! Q c).
+pullq (    P !! ex  Q) (ex  R) :- !, pi c \ R c = (P   !! Q c).
+
+pred prenex i:formula, o:formula.
+prenex P P1 :-
+    (pi P \ pi P1 \ copy1/fm P P1 :- pullq P P1)
+    => dcopy/fm P P1.
+
+pred pnf i:formula, o:formula.
+pnf P P1 :-
+    simplify P Q1, !,
+    nnf Q1 Q2, !,
+    prenex Q2 P1.

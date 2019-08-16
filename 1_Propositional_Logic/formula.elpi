@@ -58,6 +58,18 @@ copy/fm (P !!  Q) (P1 !!  Q1) :- !, copy/fm P P1, copy/fm Q Q1.
 copy/fm (P <=> Q) (P1 <=> Q1) :- !, copy/fm P P1, copy/fm Q Q1.
 copy/fm (P ==> Q) (P1 ==> Q1) :- !, copy/fm P P1, copy/fm Q Q1.
 
+pred copy1/fm i:formula, o:formula.
+copy1/fm X X.
+
+pred dcopy/fm i:formula, o:formula.
+dcopy/fm     truth R :- copy1/fm truth R.
+dcopy/fm   falsity R :- copy1/fm falsity R.
+dcopy/fm   (neg P) R :- dcopy/fm P P1, copy1/fm (neg P1) R.
+dcopy/fm (P &&  Q) R :- dcopy/fm P P1, dcopy/fm Q Q1, copy1/fm (P1 &&  Q1) R.
+dcopy/fm (P !!  Q) R :- dcopy/fm P P1, dcopy/fm Q Q1, copy1/fm (P1 !!  Q1) R.
+dcopy/fm (P <=> Q) R :- dcopy/fm P P1, dcopy/fm Q Q1, copy1/fm (P1 <=> Q1) R.
+dcopy/fm (P ==> Q) R :- dcopy/fm P P1, dcopy/fm Q Q1, copy1/fm (P1 ==> Q1) R.
+
 %%% ---------------------------------------------------------------------------
 %%% Accumulating on all subformulas of a formula.
 %%% ---------------------------------------------------------------------------

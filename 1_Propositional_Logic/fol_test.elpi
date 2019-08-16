@@ -38,8 +38,11 @@ copy/tm x x.
 copy/tm y y.
 copy/tm (f X) (f X1) :- copy/tm X X1.
 
-copy/fm (r X) (r X1) :- copy/tm X X1.
-copy/fm (t X) (t X1) :- copy/tm X X1.
+copy/fm (r X) (r X1) :- !, copy/tm X X1.
+copy/fm (t X) (t X1) :- !, copy/tm X X1.
+
+dcopy/fm (r X) P1 :- copy/tm X Y, copy1/fm (r Y) P1.
+dcopy/fm (t X) P1 :- copy/tm X Y, copy1/fm (t Y) P1.
 
 % Terms.
 termval x a.
@@ -74,4 +77,9 @@ main :-
     , ok_eq (neg (r x) !! neg (r y)) (nnf (neg (r x && r y)))
     , ok_eq ((ex X \ neg (r X)) !! r y)
             (nnf (neg ((all X \ r X) && ex X \ neg (r y))))
+    , report "pnf"
+    , ok_eq (neg (all X \ r X) !! r x && r x)
+            (simplify (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x)))
+    , ok_eq ((ex X \ neg (r X)) !! r x && t x)
+            (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
     ].
