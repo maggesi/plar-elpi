@@ -77,12 +77,16 @@ main :-
     , ok_eq (neg (r x) !! neg (r y)) (nnf (neg (r x && r y)))
     , ok_eq ((ex X \ neg (r X)) !! r y)
             (nnf (neg ((all X \ r X) && ex X \ neg (r y))))
+    , report "nnf"
+    , ok_eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
+    , report "prenex"
+    , ok_eq (ex X \ neg (r X)) (prenex (ex X \ neg (r X)))
     , report "pnf"
+    , ok_eq (ex X \ neg (r X) !! r x) (pnf (neg (all X \ r X) !! r x))
     , ok_eq (neg (all X \ r X) !! r x && r x)
             (simplify (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x)))
     , ok_eq (ex X \ neg (r X) !! r x && t x)
             (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
-    , ok_eq (ex X \ neg (r X) !! r x) (pnf (neg (all X \ r X) !! r x))
-    , ok_eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
-    , ok_eq (ex X \ neg (r X)) (prenex (ex X \ neg (r X)))
+    , ok_eq (ex X \ ex Y \ neg (r X) && neg (r Y) !! neg (r X))
+            (pnf ((ex X \ neg (all Y \ r X !! r Y)) !! neg (all X \ r X)))
     ].

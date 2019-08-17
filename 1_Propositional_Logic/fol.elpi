@@ -100,16 +100,17 @@ nnf P P1 :-
 %%% ---------------------------------------------------------------------------
 
 pred pullq i:formula, o:formula.
-pullq (all P && all Q) (all R) :- !, pi c \ R c = (P c && Q c).
-pullq (ex  P !! ex  Q) (ex  R) :- !, pi c \ R c = (P c !! Q c).
-pullq (all P &&     Q) (all R) :- !, pi c \ R c = (P c && Q  ).
-pullq (ex  P &&     Q) (ex  R) :- !, pi c \ R c = (P c && Q  ).
-pullq (all P !!     Q) (all R) :- !, pi c \ R c = (P c !! Q  ).
-pullq (ex  P !!     Q) (ex  R) :- !, pi c \ R c = (P c !! Q  ).
-pullq (    P && all Q) (all R) :- !, pi c \ R c = (P   && Q c).
-pullq (    P && ex  Q) (ex  R) :- !, pi c \ R c = (P   && Q c).
-pullq (    P !! all Q) (all R) :- !, pi c \ R c = (P   !! Q c).
-pullq (    P !! ex  Q) (ex  R) :- !, pi c \ R c = (P   !! Q c).
+pullq (all P && all Q) (all R) :- !, pi c \ pullq (P c && Q c) (R c).
+pullq (ex  P !! ex  Q) (ex  R) :- !, pi c \ pullq (P c !! Q c) (R c).
+pullq (all P &&     Q) (all R) :- !, pi c \ pullq (P c && Q  ) (R c).
+pullq (ex  P &&     Q) (ex  R) :- !, pi c \ pullq (P c && Q  ) (R c).
+pullq (all P !!     Q) (all R) :- !, pi c \ pullq (P c !! Q  ) (R c).
+pullq (ex  P !!     Q) (ex  R) :- !, pi c \ pullq (P c !! Q  ) (R c).
+pullq (    P && all Q) (all R) :- !, pi c \ pullq (P   && Q c) (R c).
+pullq (    P && ex  Q) (ex  R) :- !, pi c \ pullq (P   && Q c) (R c).
+pullq (    P !! all Q) (all R) :- !, pi c \ pullq (P   !! Q c) (R c).
+pullq (    P !! ex  Q) (ex  R) :- !, pi c \ pullq (P   !! Q c) (R c).
+pullq P P.
 
 pred prenex i:formula, o:formula.
 prenex P P1 :-
