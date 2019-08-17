@@ -99,22 +99,22 @@ nnf P P1 :-
 %%% Prenex normal form.
 %%% ---------------------------------------------------------------------------
 
-pred pullq i:formula, o:formula.
-pullq (all P && all Q) (all R) :- !, pi c \ pullq (P c && Q c) (R c).
-pullq (ex  P !! ex  Q) (ex  R) :- !, pi c \ pullq (P c !! Q c) (R c).
-pullq (all P &&     Q) (all R) :- !, pi c \ pullq (P c && Q  ) (R c).
-pullq (ex  P &&     Q) (ex  R) :- !, pi c \ pullq (P c && Q  ) (R c).
-pullq (all P !!     Q) (all R) :- !, pi c \ pullq (P c !! Q  ) (R c).
-pullq (ex  P !!     Q) (ex  R) :- !, pi c \ pullq (P c !! Q  ) (R c).
-pullq (    P && all Q) (all R) :- !, pi c \ pullq (P   && Q c) (R c).
-pullq (    P && ex  Q) (ex  R) :- !, pi c \ pullq (P   && Q c) (R c).
-pullq (    P !! all Q) (all R) :- !, pi c \ pullq (P   !! Q c) (R c).
-pullq (    P !! ex  Q) (ex  R) :- !, pi c \ pullq (P   !! Q c) (R c).
-pullq P P.
+pred pullquants i:formula, o:formula.
+pullquants (all P && all Q) (all R) :- !, pi c \ pullquants (P c && Q c) (R c).
+pullquants (ex  P !! ex  Q) (ex  R) :- !, pi c \ pullquants (P c !! Q c) (R c).
+pullquants (all P &&     Q) (all R) :- !, pi c \ pullquants (P c && Q  ) (R c).
+pullquants (ex  P &&     Q) (ex  R) :- !, pi c \ pullquants (P c && Q  ) (R c).
+pullquants (all P !!     Q) (all R) :- !, pi c \ pullquants (P c !! Q  ) (R c).
+pullquants (ex  P !!     Q) (ex  R) :- !, pi c \ pullquants (P c !! Q  ) (R c).
+pullquants (    P && all Q) (all R) :- !, pi c \ pullquants (P   && Q c) (R c).
+pullquants (    P && ex  Q) (ex  R) :- !, pi c \ pullquants (P   && Q c) (R c).
+pullquants (    P !! all Q) (all R) :- !, pi c \ pullquants (P   !! Q c) (R c).
+pullquants (    P !! ex  Q) (ex  R) :- !, pi c \ pullquants (P   !! Q c) (R c).
+pullquants P P.
 
 pred prenex i:formula, o:formula.
 prenex P P1 :-
-    (pi P P1 \ copy1/fm P P1 :- pullq P P1)
+    (pi P P1 \ copy1/fm P P1 :- pullquants P P1)
     => dcopy/fm P P1.
 
 pred pnf i:formula, o:formula.
