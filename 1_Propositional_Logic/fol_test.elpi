@@ -80,6 +80,9 @@ main :-
     , report "pnf"
     , ok_eq (neg (all X \ r X) !! r x && r x)
             (simplify (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x)))
-    , ok_eq ((ex X \ neg (r X)) !! r x && t x)
+    , ok_eq (ex X \ neg (r X) !! r x && t x)
             (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
+    , ok_eq (ex X \ neg (r X) !! r x) (pnf (neg (all X \ r X) !! r x))
+    , ok_eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
+    , ok_eq (ex X \ neg (r X)) (prenex (ex X \ neg (r X)))
     ].

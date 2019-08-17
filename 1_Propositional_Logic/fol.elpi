@@ -18,11 +18,11 @@ type formula/c formula -> formula/c.
 type ctx (term -> formula/c) -> formula/c.
 
 % Mapping on formulas.
-copy/fm (all P) (all P1) :- !, pi x\ copy/tm x x => copy/fm (P x) (P1 x).
-copy/fm (ex  P) (ex  P1) :- !, pi x\ copy/tm x x => copy/fm (P x) (P1 x).
+copy/fm (all P) (all P1) :- pi c\ copy/tm c c => copy/fm (P c) (P1 c).
+copy/fm (ex  P) (ex  P1) :- pi c\ copy/tm c c => copy/fm (P c) (P1 c).
 
-dcopy/fm (all P) P1 :- pi x\ copy/tm x x => (dcopy/fm (P x) R, copy1/fm R P1).
-dcopy/fm (ex  P) P1 :- pi x\ copy/tm x x => (dcopy/fm (P x) R, copy1/fm R P1).
+dcopy/fm (all P) P1 :- (pi c\ (copy/tm c c :- !) => dcopy/fm (P c) (R c)), copy1/fm (all R) P1.
+dcopy/fm (ex  P) P1 :- (pi c\ (copy/tm c c :- !) => dcopy/fm (P c) (R c)), copy1/fm (ex  R) P1.
 
 %%% ---------------------------------------------------------------------------
 %%% Interpretation of term and formulas.
