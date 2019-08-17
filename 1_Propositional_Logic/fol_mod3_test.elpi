@@ -36,8 +36,8 @@ namespace mod3_interp
 
 pred holds/3 i:formula, o:bool.
 holds/3 P B :-
-    [ (pi X \ pi A \ termval X A :- mod3_interp.termval/3 X A, !)
-    , (pi P \ pi B \ eval P B    :- mod3_interp.atomval/3 P B, !)
+    [ (pi X A \ termval X A :- mod3_interp.termval/3 X A, !)
+    , (pi P B \ eval P B    :- mod3_interp.atomval/3 P B, !)
     ] => holds P B.
 
 %%% ---------------------------------------------------------------------------

@@ -111,7 +111,7 @@ pred atomic i:formula.
 
 pred onatoms i:(formula -> formula -> o), i:formula, o:formula.
 onatoms F P Q :-
-    (pi A\ pi B\ copy/fm A B :- atomic A, !, F A B)
+    (pi A B \ copy/fm A B :- atomic A, !, F A B)
     => copy/fm P Q.
 
 %%% ---------------------------------------------------------------------------
@@ -120,5 +120,5 @@ onatoms F P Q :-
 
 pred atoms i:formula, o:list formula.
 atoms P L :-
-    (pi A\ pi L\ pi L1\ fold A L L1 :- atomic A, !, insert A L L1)
+    (pi A L L1 \ fold A L L1 :- atomic A, !, insert A L L1)
     => fold P [] L.

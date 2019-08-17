@@ -51,8 +51,8 @@ namespace mod_interp
 pred holds/mod i:int, i:formula, o:bool.
 holds/mod K P B :-
     [ (pi D \ domain D :- domain/mod K D)
-    , (pi X \ pi A \ termval X A :- mod_interp.termval/mod X A)
-    , (pi P \ pi B \ eval P B    :- mod_interp.atomval/mod K P B, !)
+    , (pi X A \ termval X A :- mod_interp.termval/mod X A)
+    , (pi P B \ eval P B    :- mod_interp.atomval/mod K P B, !)
     ] => holds P B.
 
 %%% ---------------------------------------------------------------------------
