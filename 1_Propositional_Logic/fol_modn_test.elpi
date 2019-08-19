@@ -65,17 +65,25 @@ commutative Op (all X \ all Y \ eq (Op X Y) (Op Y X)).
 pred associative i:(term -> term -> term), o:formula.
 associative Op (all X \ all Y \ all Z \ eq (Op X (Op Y Z)) (Op (Op X Y) Z)).
 
-pred hasid i:(term -> term -> term), o:formula.
-hasid Op (ex E \ all X \ eq (Op X E) X && eq (Op E X) X).
+pred is_lid i:(term -> term -> term), i:term, o:formula.
+is_lid Op Id (all X \ eq (Op Id X) X).
+
+pred is_rid i:(term -> term -> term), i:term, o:formula.
+is_rid Op Id (all X \ eq (Op X Id) X).
+
+pred is_id i:(term -> term -> term), i:term, o:formula.
+is_id Op Id (HasLId && HasRId) :-
+    is_lid Op Id HasLId,
+    is_rid Op Id HasRId.
 
 pred hasinv o:formula.
 hasinv (all X \ neg (eq X zero) ==> ex Y \ eq (mul X Y) one).
 
-pred monoidal i:(term -> term -> term), o:formula.
-monoidal Op (Assoc && Comm && Id) :-
-    associative Op Assoc,
-    commutative Op Comm,
-    hasid Op Id.
+pred monoidal i:(term -> term -> term), i:term, o:formula.
+monoidal Op Id (IsAssoc && IsComm && IsId) :-
+    associative Op IsAssoc,
+    commutative Op IsComm,
+    is_id Op Id IsId.
 
 pred ldirstrib i:(term -> term -> term), i:(term -> term -> term), o:formula.
 ldirstrib Add Mul
@@ -87,15 +95,27 @@ rdirstrib Add Mul
     (all X \ all Y \ all Z \
         eq (Mul (Add Y Z) X) (Add (Mul Y X) (Mul Z X))).
 
-pred dirstrib i:(term -> term -> term), i:(term -> term -> term), o:formula.
+pred distrib i:(term -> term -> term), i:(term -> term -> term), o:formula.
 distrib Add Mul (LDistr && RDistr) :-
     ldirstrib Add Mul LDistr,
     rdirstrib Add Mul RDistr.
 
-pred isring o:formula.
-isring (AddMon && MulMon && Distr) :-
-    monoidal add AddMon,
-    monoidal mul MulMon,
+pred is_lzero i:(term -> term -> term), i:term, o:formula.
+is_lzero Mul Zero (all X \ eq (Mul Zero X) Zero). 
+
+pred is_rzero i:(term -> term -> term), i:term, o:formula.
+is_rzero Mul Zero (all X \ eq (Mul X Zero) Zero). 
+
+pred is_zero i:(term -> term -> term), i:term, o:formula.
+is_zero Mul Zero (HasLZero && HasRZero) :-
+    is_lzero Mul Zero HasLZero,
+    is_rzero Mul Zero HasRZero.
+
+pred is_ring o:formula.
+is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
+    (pi z \ monoidal add z (AddMon z),
+            is_zero mul z (HasZero z)),
+    (pi u \ monoidal mul u (MulMon u)),
     distrib add mul Distr.
 
 main :-
@@ -139,19 +159,19 @@ main :-
     , okb (holds/mod 6 {commutative mul})
     , okb (holds/mod 7 {commutative mul})
     , report "zero"
-    , okb (holds/mod 2 {hasid add})
-    , okb (holds/mod 3 {hasid add})
-    , okb (holds/mod 4 {hasid add})
-    , okb (holds/mod 5 {hasid add})
-    , okb (holds/mod 6 {hasid add})
-    , okb (holds/mod 7 {hasid add})
+    , okb (holds/mod 2 {is_id add zero})
+    , okb (holds/mod 3 {is_id add zero})
+    , okb (holds/mod 4 {is_id add zero})
+    , okb (holds/mod 5 {is_id add zero})
+    , okb (holds/mod 6 {is_id add zero})
+    , okb (holds/mod 7 {is_id add zero})
     , report "one"
-    , okb (holds/mod 2 {hasid mul})
-    , okb (holds/mod 3 {hasid mul})
-    , okb (holds/mod 4 {hasid mul})
-    , okb (holds/mod 5 {hasid mul})
-    , okb (holds/mod 6 {hasid mul})
-    , okb (holds/mod 7 {hasid mul})
+    , okb (holds/mod 2 {is_id mul one})
+    , okb (holds/mod 3 {is_id mul one})
+    , okb (holds/mod 4 {is_id mul one})
+    , okb (holds/mod 5 {is_id mul one})
+    , okb (holds/mod 6 {is_id mul one})
+    , okb (holds/mod 7 {is_id mul one})
     , report "associative add"
     , okb (holds/mod 2 {associative add})
     , okb (holds/mod 3 {associative add})
@@ -173,11 +193,11 @@ main :-
     , okb (holds/mod 5 {hasinv})
     , kob (holds/mod 6 {hasinv})
     , okb (holds/mod 7 {hasinv})
-    , report "isring"
-    , okb (holds/mod 2 {isring})
-    , okb (holds/mod 3 {isring})
-    , okb (holds/mod 4 {isring})
-    , okb (holds/mod 5 {isring})
-    , okb (holds/mod 6 {isring})
-    , okb (holds/mod 7 {isring})
+    , report "is_ring"
+    , okb (holds/mod 2 {is_ring})
+    , okb (holds/mod 3 {is_ring})
+    , okb (holds/mod 4 {is_ring})
+    , okb (holds/mod 5 {is_ring})
+    , okb (holds/mod 6 {is_ring})
+    , okb (holds/mod 7 {is_ring})
     ].
