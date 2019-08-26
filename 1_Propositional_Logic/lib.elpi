@@ -53,14 +53,8 @@ pred std.exists! i:list A, i:(A -> prop).
 std.exists! [X|_] P :- P X, !.
 std.exists! [_|L] P :- std.exists! L P.
 
-:index(_ 1)
-pred memeq i:A, i:list A.
-memeq A [A|_] :- !.
-memeq A [_|L] :- memeq A L.
-
-:index(_ 1)
 pred insert i:A, i:list A, o:list A.
-insert A L L :- memeq A L, !.
+insert A L L :- std.mem L A, !.
 insert A L [A|L].
 
 pred union i:list A, i:list A, o:list A.
