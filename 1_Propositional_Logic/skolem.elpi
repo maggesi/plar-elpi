@@ -1,0 +1,35 @@
+%%% ===========================================================================
+%%% Skolemization.
+%%% ===========================================================================
+
+accumulate "fol".
+
+% Skolemized formulas
+kind formula/sk type.
+
+type formula/sk formula -> formula/sk.
+type var/sk (term -> formula/sk) -> formula/sk.
+type func/sk ((list term -> term) -> formula/sk) -> formula/sk.
+
+pred skolem i:formula, o:formula/sk.
+skolem P Q :- skolem.aux P [] Q.
+
+pred skolem.aux i:formula, i:list term, o:formula/sk.
+skolem.aux (all P) Xs (var/sk Q) :- !,
+    pi c \ skolem.aux (P c) [c|Xs] (Q c).
+skolem.aux (ex  P) Xs (func/sk F \ Q (F Xs)) :- !,
+    pi c \ skolem.aux (P c) Xs (Q c).
+skolem.aux P _Xs (formula/sk P).
+
+type p term -> formula.
+type r term -> term -> formula.
+type a, b term.
+type f term -> term -> term.
+
+main :-
+    (sigma Q \ std.spy (skolem.aux (all X \ p X) [a,b] Q)),
+    (sigma Q \ std.spy (skolem.aux (ex  X \ p X) [a,b] Q)),
+    (sigma Q \ std.spy (skolem (ex  X \ all Y \ r X Y) Q)),
+    (sigma Q \ std.spy (skolem (all X \ ex  Y \ r X Y) Q)),
+    (sigma Q \ std.spy (skolem (all X \ ex  Y \ all Z \ r X (f Y Z)) Q)),
+    (sigma Q \ std.spy (skolem (all X \ all Y \ ex  Z \ r X (f Y Z)) Q)).

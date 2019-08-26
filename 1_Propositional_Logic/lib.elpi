@@ -3,7 +3,7 @@
 %%% ===========================================================================
 
 %%% ---------------------------------------------------------------------------
-%%% Boolean operators.
+%%% Boolean connectives.
 %%% ---------------------------------------------------------------------------
 
 pred negb o:bool, o:bool.
@@ -36,7 +36,7 @@ reflect P tt :- P, !.
 reflect _ ff.
 
 %%% ---------------------------------------------------------------------------
-%%% Lists.
+%%% Boolean operations on lists.
 %%% ---------------------------------------------------------------------------
 
 pred forallb i:list A, i:(A->bool->pred), o:bool.
@@ -53,6 +53,10 @@ pred std.exists! i:list A, i:(A -> prop).
 std.exists! [X|_] P :- P X, !.
 std.exists! [_|L] P :- std.exists! L P.
 
+%%% ---------------------------------------------------------------------------
+%%% Set-like operations on lists.
+%%% ---------------------------------------------------------------------------
+
 pred insert i:A, i:list A, o:list A.
 insert A L L :- std.mem L A, !.
 insert A L [A|L].
@@ -60,6 +64,15 @@ insert A L [A|L].
 pred union i:list A, i:list A, o:list A.
 union [] L L.
 union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
+
+%%% ---------------------------------------------------------------------------
+%%% Nonlogical pridicates.
+%%% ---------------------------------------------------------------------------
+
+pred findall i:prop, o:list prop.
+findall P L :- new_safe F, findall.aux P F, open_safe F L.
+findall.aux P F :- P, stash_in_safe F P, fail.
+findall.aux _ _.
 
 %%% ---------------------------------------------------------------------------
 %%% Rudimentary testing framework.
