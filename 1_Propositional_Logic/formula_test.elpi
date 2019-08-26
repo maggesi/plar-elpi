@@ -4,6 +4,8 @@ type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
+shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+
 main :- run_tests
     [ report "Test copy/fm"
     , (ok_eq (q && r !! r) R \

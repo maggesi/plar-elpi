@@ -25,6 +25,8 @@ termval (mul X Y) B :- andb {termval X} {termval Y} B.
 
 holds (eq X Y) B :- iffb {termval X} {termval Y} B.
 
+shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+
 main :-
     run_tests
     [ okb (holds/c (ctx X\ ctx Y\ formula/c (eq (add X Y) (add Y X))))

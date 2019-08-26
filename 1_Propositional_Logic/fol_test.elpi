@@ -57,6 +57,8 @@ eval (t X) B :- eval_t {termval X} B.
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
+shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+
 main :-
     run_tests
     [ report "holds"

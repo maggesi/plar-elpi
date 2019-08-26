@@ -66,17 +66,10 @@ union [] L L.
 union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
 
 %%% ---------------------------------------------------------------------------
-%%% Nonlogical pridicates.
-%%% ---------------------------------------------------------------------------
-
-pred findall i:prop, o:list prop.
-findall P L :- new_safe F, findall.aux P F, open_safe F L.
-findall.aux P F :- P, stash_in_safe F P, fail.
-findall.aux _ _.
-
-%%% ---------------------------------------------------------------------------
 %%% Rudimentary testing framework.
 %%% ---------------------------------------------------------------------------
+
+namespace testing {
 
 kind test type.
 type ok, ko prop -> test.
@@ -172,3 +165,4 @@ test_ok_eq R P I S S :-
        print "  !!! TEST OK EQ FAILED:" I,
        print "  !!! Expected:" (P R),
        print "  !!! FAILED".
+}

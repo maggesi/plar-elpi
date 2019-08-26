@@ -118,6 +118,8 @@ is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
     (pi u \ monoidal mul u (MulMon u)),
     distrib add mul Distr.
 
+shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+
 main :-
     run_tests
     [ report "numseg"

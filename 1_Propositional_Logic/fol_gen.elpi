@@ -51,6 +51,8 @@ atomval "=" [A, B] C :- iffb A B C.
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
+shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+
 main :-
     run_tests
     [ okb
