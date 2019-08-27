@@ -118,6 +118,12 @@ is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
     (pi u \ monoidal mul u (MulMon u)),
     distrib add mul Distr.
 
+%%% ---------------------------------------------------------------------------
+%%% Run tests.
+%%% ---------------------------------------------------------------------------
+
+accumulate testing.
+
 shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-

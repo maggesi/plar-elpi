@@ -48,8 +48,10 @@ funcval "*" [A, B] C :- andb A B C.
 atomval "=" [A, B] C :- iffb A B C.
 
 %%% ---------------------------------------------------------------------------
-%%% Tests.
+%%% Run tests.
 %%% ---------------------------------------------------------------------------
+
+accumulate testing.
 
 shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
