@@ -2,20 +2,6 @@
 %%% Rudimentary testing framework.
 %%% ===========================================================================
 
-%% ----------------------------------------------------------------------------
-%% Verbosity.
-%% ----------------------------------------------------------------------------
-
-pred verbose o:bool.
-verbose tt.
-
-pred when-verbose i:prop.
-when-verbose _ :- verbose ff, !.
-when-verbose P :- P.
-
-pred with-verbosity i:bool, i:prop.
-with-verbosity B P :- (verbose B :- !) => P.
-
 namespace testing {
 
 %% ----------------------------------------------------------------------------
@@ -41,7 +27,8 @@ type ok-eq A -> (A -> prop) -> test.
 
 pred run-test i:test, o:outcome.
 
-run-test (section Msg) (ignore "Section title.") :- print "Section:" Msg.
+run-test (section Msg) (ignore "Section title.") :-
+    when-verbosity terse (print "Section:" Msg).
 
 run-test (ok P) (success "") :- P, !.
 run-test (ok _) (failure "").
@@ -75,23 +62,23 @@ run-test (kob _) (failure "No solution found.").
 %% The infrastructure.
 %% ----------------------------------------------------------------------------
 
-pred run_tests i:(list test).
-run_tests Tests :-
+pred run-tests i:(list test).
+run-tests Tests :-
     do!
-    [ when-verbose (print "run_tests: Start.")
+    [ when-verbosity terse (print "run-tests: Start.")
     , run-tests-iter Tests (test-stats 0 0) (test-stats S N)
-    , when-verbose (print "run_tests: Done!")
-    , print "Passed" S "out of" N
+    , when-verbosity terse (print "run-tests: Done!")
+    , when-verbosity quiet (print "Passed" S "out of" N)
     ].
 
 pred run-tests-iter i:(list test), i:test-stats, o:test-stats.
 run-tests-iter [] S S.
 run-tests-iter [T|Ts] S S2 :-
     do!
-    [ when-verbose (print "-- Test:" T)
+    [ when-verbosity info (print "-- Test:" T)
     , run-test T R
     , report-test R S S1
-    , when-verbose (print "   Exit:" T)
+    , when-verbosity info (print "   Exit:" T)
     ],
     run-tests-iter Ts S1 S2.
 run-tests-iter [T|_] _ _ :-
@@ -100,17 +87,19 @@ run-tests-iter [T|_] _ _ :-
 pred report-test i:outcome, i:test-stats, o:test-stats.
 report-test (failure Msg) (test-stats Num Succ) (test-stats Num1 Succ) :-
     Num1 is Num + 1,
-    print "!! FAILURE: Test number" Num1,
-    print-reason Msg.
+    when-verbosity quiet (
+        print "!! FAILURE: Test number" Num1,
+        print-reason Msg
+    ).
 report-test (success Msg) (test-stats Num Succ) (test-stats Num1 Succ1) :-
     Num1 is Num + 1,
     Succ1 is Succ + 1,
-    when-verbose (
+    when-verbosity info (
         print "   SUCCESS: Test number" Num1,
         print-reason Msg
     ).
 report-test (ignore Msg) S S :-
-    when-verbose (print "   IGNORE:" Msg).
+    when-verbosity verbose (print "   IGNORE:" Msg).
 
 pred print-reason i:string.
 print-reason "" :- !.

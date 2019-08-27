@@ -2,7 +2,7 @@
 %%% Basic stuff for propositional logic: datatype, parsing and printing.
 %%% ===========================================================================
 
-accumulate "formula".
+accumulate formula.
 
 pred eval i:formula, o:bool.
 :if "DBG:HOLDS"
@@ -21,11 +21,13 @@ onallvaluations F P [A|As] :- ((eval A ff :- !) => onallvaluations F P As),
                               ((eval A tt :- !) => onallvaluations F P As).
 
 pred truthtable_row i:list formula, i:bool.
-truthtable_row As B :- std.map As eval Bs, print [B | Bs].
+truthtable_row As B :-
+    std.map As eval Bs,
+    when-verbosity info (print [B | Bs]).
 
 pred truthtable i:formula.
 truthtable P :- atoms P As,
-                print [P | As],
+                when-verbosity info (print [P | As]),
                 onallvaluations (truthtable_row As) P As.
 
 pred tautology_row i:bool.

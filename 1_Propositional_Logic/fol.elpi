@@ -2,7 +2,7 @@
 %%% First-order logic.
 %%% ===========================================================================
 
-accumulate "prop".
+accumulate prop.
 
 % Terms.
 kind term type.

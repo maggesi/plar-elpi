@@ -2,11 +2,11 @@
 
 # Usage: elpi ./run_all_tests.sh 
 
-echo "lib_test.elpi"      ; elpi lib_test.elpi -test 2> /dev/null
-echo "formula_test.elpi"  ; elpi formula_test.elpi -test 2> /dev/null
-echo "prop_test.elpi"     ; elpi prop_test.elpi -test 2> /dev/null
-echo "fol_test.elpi"      ; elpi fol_test.elpi -test 2> /dev/null
-echo "fol_gen.elpi"       ; elpi fol_gen.elpi -test 2> /dev/null
-echo "fol_bool_test.elpi" ; elpi fol_bool_test.elpi -test 2> /dev/null
-echo "fol_mod3_test.elpi" ; elpi fol_mod3_test.elpi -test 2> /dev/null
-echo "fol_modn_test.elpi" ; elpi fol_modn_test.elpi -test 2> /dev/null
+echo -n "lib      \t" ; elpi lib_test.elpi -test 2> /dev/null
+echo -n "formula  \t" ; elpi formula_test.elpi -test 2> /dev/null
+echo -n "prop     \t" ; elpi prop_test.elpi -test 2> /dev/null
+echo -n "fol      \t" ; elpi fol_test.elpi -test 2> /dev/null
+echo -n "fol_gen  \t" ; elpi fol_gen.elpi -test 2> /dev/null
+echo -n "fol_bool \t" ; elpi fol_bool_test.elpi -test 2> /dev/null
+echo -n "fol_mod3 \t" ; elpi fol_mod3_test.elpi -test 2> /dev/null
+echo -n "fol_modn \t" ; elpi fol_modn_test.elpi -test 2> /dev/null

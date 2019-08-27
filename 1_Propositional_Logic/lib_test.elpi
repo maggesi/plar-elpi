@@ -19,10 +19,10 @@ fun 2 tt.
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "forallb"
     , okb (forallb [0, 2] fun)
     , kob (forallb [0, 1] fun)
@@ -30,4 +30,4 @@ main :-
     , okb (existsb [0, 1] fun)
     , kob (existsb [1] fun)
     % , okb (existsb [1] fun)   % To see an example of failure.
-    ].
+    ]).

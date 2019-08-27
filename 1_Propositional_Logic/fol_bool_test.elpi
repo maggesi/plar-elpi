@@ -2,7 +2,7 @@
 %%% Boolean interpretation.
 %%% ===========================================================================
 
-accumulate "fol".
+accumulate fol.
 
 %%% ---------------------------------------------------------------------------
 %%% Language.
@@ -31,10 +31,10 @@ holds (eq X Y) B :- iffb {termval X} {termval Y} B.
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "Fol bool"
     , okb (holds/c (ctx X\ ctx Y\ formula/c (eq (add X Y) (add Y X))))
-    ].
+    ]).

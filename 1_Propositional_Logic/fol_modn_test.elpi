@@ -2,7 +2,7 @@
 %%% Modular arithmetic interpretation.
 %%% ===========================================================================
 
-accumulate "fol".
+accumulate fol.
 
 %%% ---------------------------------------------------------------------------
 %%% Miscellanea.
@@ -124,10 +124,10 @@ is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "numseg"
     , ok-eq [0,1,2] (L \ numseg L 0 2)
     , ok (numseg [] 1 1)
@@ -208,4 +208,4 @@ main :-
     , okb (holds/mod 5 {is_ring})
     , okb (holds/mod 6 {is_ring})
     , okb (holds/mod 7 {is_ring})
-    ].
+    ]).

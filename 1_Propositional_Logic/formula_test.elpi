@@ -14,10 +14,10 @@ atomic P :- std.mem! [p,q,r] P.
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "Test copy/fm"
     , (ok-eq (q && r !! r) R \
          [ (copy/fm p q :- !)
@@ -33,4 +33,4 @@ main :-
          ] => onatoms F (p && q !! r) R)
     , section "Test atoms"
     , ok-eq [p, q, r] (atoms (p && q !! r))
-    ].
+    ]).

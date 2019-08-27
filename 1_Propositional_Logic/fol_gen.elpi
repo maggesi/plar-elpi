@@ -2,7 +2,7 @@
 %%% Generic infrastructure.
 %%% ===========================================================================
 
-accumulate "fol".
+accumulate fol.
 
 %%% ---------------------------------------------------------------------------
 %%% Generic terms.
@@ -53,13 +53,13 @@ atomval "=" [A, B] C :- iffb A B C.
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "Fol gen"
     , okb
         (holds/c (ctx A\ ctx B\
                     formula/c (atom "=" [fn "+" [A, B],
                                          fn "+" [B, A]])))
-    ].
+    ]).

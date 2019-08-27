@@ -2,7 +2,7 @@
 %%% Skolemization.
 %%% ===========================================================================
 
-accumulate "fol".
+accumulate fol.
 
 % Skolemized formulas
 kind formula/sk type.

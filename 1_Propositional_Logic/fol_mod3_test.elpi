@@ -2,7 +2,7 @@
 %%% Mod 3 interpretation.
 %%% ===========================================================================
 
-accumulate "fol".
+accumulate fol.
 
 %%% ---------------------------------------------------------------------------
 %%% Model, language, interpretation.
@@ -46,10 +46,10 @@ holds/3 P B :-
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "Mod 3"
     , okb (holds/3 (eq (add two one) zero))
     , kob (holds/3 (eq (add two two) zero))
@@ -59,4 +59,4 @@ main :-
     , okb (holds/3 (ex  X \ eq (add X  one)  two))
     , okb (holds/3 (all X \ eq (mul X zero) zero))
     , kob (holds/3 (ex  X \ eq (mul X zero)  one))
-    ].
+    ]).

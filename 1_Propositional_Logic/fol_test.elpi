@@ -2,7 +2,7 @@
 %%% Simple test for FOL.
 %%% ===========================================================================
 
-accumulate "fol".
+accumulate fol.
 
 %%% ---------------------------------------------------------------------------
 %%% Model.
@@ -59,10 +59,10 @@ eval (t X) B :- eval_t {termval X} B.
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "holds"
     , okb (holds (r x))
     , kob (holds (r y))
@@ -93,4 +93,4 @@ main :-
             (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
     , ok-eq (ex X \ ex Y \ neg (r X) && neg (r Y) !! neg (r X))
             (pnf ((ex X \ neg (all Y \ r X !! r Y)) !! neg (all X \ r X)))
-    ].
+    ]).

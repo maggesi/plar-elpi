@@ -2,7 +2,7 @@
 %%% Tests for prop.
 %%% =========================================================================== 
 
-accumulate "prop".
+accumulate prop.
 
 type p, q, r formula.
 
@@ -10,14 +10,14 @@ atomic P :- std.mem! [p,q,r] P.
 
 accumulate testing.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
+shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
 
 main :-
-    (verbose ff :- !) => run_tests
+    with-verbosity quiet (run-tests
     [ section "Test eval"
     , (kob R \
          [ (eval p tt :- !)
@@ -45,5 +45,5 @@ main :-
     , ko (unsatisfiable (neg p !! q))
     , ko (unsatisfiable (neg p && q))
     , ko (unsatisfiable (neg p !! p))
-    ].
+    ]).
 
