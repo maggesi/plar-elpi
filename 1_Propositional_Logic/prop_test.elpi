@@ -4,10 +4,11 @@ type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
-main :- run_tests
-    [ report "Test eval"
+main :-
+    (verbose ff :- !) => run_tests
+    [ section "Test eval"
     , (kob R \
          [ (eval p tt :- !)
          , (eval q ff :- !)
@@ -16,20 +17,20 @@ main :- run_tests
          [(eval p tt :- !)
          , (eval q tt :- !)
          ] => eval (p && q) R)
-    , report "Test atoms"
-    , ok_eq [q, p] (atoms (p && q !! p))
-    , report "Test truth table"
+    , section "Test atoms"
+    , ok-eq [q, p] (atoms (p && q !! p))
+    , section "Test truth table"
     , ok (truthtable (p && q !! (p ==> r)))
     , ok (truthtable (neg p !! q))
-    , report "Test tautology"
+    , section "Test tautology"
     , ok (tautology (neg p !! p))
     , ok (tautology (falsity ==> p))
     , ko (tautology (neg p !! q))
-    , report "Test satisfiable"
+    , section "Test satisfiable"
     , ok (satisfiable (neg p !! p))
     , ok (satisfiable (neg p !! q))
     , ko (satisfiable (neg p && p))
-    , report "Test unsatisfiable"
+    , section "Test unsatisfiable"
     , ok (unsatisfiable (neg p && p))
     , ko (unsatisfiable (neg p !! q))
     , ko (unsatisfiable (neg p && q))

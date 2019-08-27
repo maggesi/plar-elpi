@@ -51,11 +51,12 @@ atomval "=" [A, B] C :- iffb A B C.
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    run_tests
-    [ okb
+    (verbose ff :- !) => run_tests
+    [ section "Fol gen"
+    , okb
         (holds/c (ctx A\ ctx B\
                     formula/c (atom "=" [fn "+" [A, B],
                                          fn "+" [B, A]])))

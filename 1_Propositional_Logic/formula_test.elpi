@@ -4,22 +4,23 @@ type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
-main :- run_tests
-    [ report "Test copy/fm"
-    , (ok_eq (q && r !! r) R \
+main :-
+    (verbose ff :- !) => run_tests
+    [ section "Test copy/fm"
+    , (ok-eq (q && r !! r) R \
          [ (copy/fm p q :- !)
          , (copy/fm q r :- !)
          , (pi X\ copy/fm X X :- atomic X)
          ] => copy/fm (p && q !! r) R)
-    , report "Test onatoms"
-    , (ok_eq (r && q !! p) R \
+    , section "Test onatoms"
+    , (ok-eq (r && q !! p) R \
          pi F\
          [ (F p r :- !)
          , (F r p :- !)
          , (pi X\ F X X)
          ] => onatoms F (p && q !! r) R)
-    , report "Test atoms"
-    , ok_eq [p, q, r] (atoms (p && q !! r))
+    , section "Test atoms"
+    , ok-eq [p, q, r] (atoms (p && q !! r))
     ].

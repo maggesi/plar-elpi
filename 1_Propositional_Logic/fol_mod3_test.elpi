@@ -44,11 +44,11 @@ holds/3 P B :-
 %%% Tests.
 %%% ---------------------------------------------------------------------------
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    run_tests
-    [ report "Mod 3"
+    (verbose ff :- !) => run_tests
+    [ section "Mod 3"
     , okb (holds/3 (eq (add two one) zero))
     , kob (holds/3 (eq (add two two) zero))
     , okb (holds/3 (eq (mul two two)  one))

@@ -17,14 +17,15 @@ fun 2 tt.
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
     run_tests
-    [ report "forallb"
+    [ section "forallb"
     , okb (forallb [0, 2] fun)
     , kob (forallb [0, 1] fun)
-    , report "existsb"
+    , section "existsb"
     , okb (existsb [0, 1] fun)
     , kob (existsb [1] fun)
+    , okb (existsb [1] fun)   % To see an example of failure.
     ].

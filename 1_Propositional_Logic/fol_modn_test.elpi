@@ -118,15 +118,15 @@ is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
     (pi u \ monoidal mul u (MulMon u)),
     distrib add mul Distr.
 
-shorten testing.{ run_tests, ok, ko, okb, kob, ok_eq, report }.
+shorten testing.{ run_tests, ok, ko, okb, kob, ok-eq, section }.
 
 main :-
-    run_tests
-    [ report "numseg"
-    , ok_eq [0,1,2] (L \ numseg L 0 2)
+    (verbose ff :- !) => run_tests
+    [ section "numseg"
+    , ok-eq [0,1,2] (L \ numseg L 0 2)
     , ok (numseg [] 1 1)
     , ko (pi L \ numseg L 1 0)
-    , report "Modulo 3"
+    , section "Modulo 3"
     , okb (holds/mod 3 (eq (add two one) zero))
     , kob (holds/mod 3 (eq (add two two) zero))
     , okb (holds/mod 3 (eq (mul two two)  one))
@@ -137,7 +137,7 @@ main :-
     , kob (holds/mod 3 (ex  X \ eq (mul X zero)  one))
     , okb (holds/mod 3 (all X \ all Y \ eq (add X Y) (add Y X)))
     , okb (holds/mod 3 (all X \ all Y \ eq (mul X Y) (mul Y X)))
-    , report "Modulo 5"
+    , section "Modulo 5"
     , okb (holds/mod 5 (eq (add (add two one) two) zero))
     , kob (holds/mod 5 (eq (add two two) zero))
     , okb (holds/mod 5 (all X \ eq (add X zero)   X ))
@@ -146,56 +146,56 @@ main :-
     , kob (holds/mod 5 (ex  X \ eq (mul X zero)  one))
     , okb (holds/mod 5 (all X \ all Y \ eq (add X Y) (add Y X)))
     , okb (holds/mod 5 (all X \ all Y \ eq (mul X Y) (mul Y X)))
-    , report "commutative add"
+    , section "commutative add"
     , okb (holds/mod 2 {commutative add})
     , okb (holds/mod 3 {commutative add})
     , okb (holds/mod 4 {commutative add})
     , okb (holds/mod 5 {commutative add})
     , okb (holds/mod 6 {commutative add})
     , okb (holds/mod 7 {commutative add})
-    , report "commutative mul"
+    , section "commutative mul"
     , okb (holds/mod 2 {commutative mul})
     , okb (holds/mod 3 {commutative mul})
     , okb (holds/mod 4 {commutative mul})
     , okb (holds/mod 5 {commutative mul})
     , okb (holds/mod 6 {commutative mul})
     , okb (holds/mod 7 {commutative mul})
-    , report "zero"
+    , section "zero"
     , okb (holds/mod 2 {is_id add zero})
     , okb (holds/mod 3 {is_id add zero})
     , okb (holds/mod 4 {is_id add zero})
     , okb (holds/mod 5 {is_id add zero})
     , okb (holds/mod 6 {is_id add zero})
     , okb (holds/mod 7 {is_id add zero})
-    , report "one"
+    , section "one"
     , okb (holds/mod 2 {is_id mul one})
     , okb (holds/mod 3 {is_id mul one})
     , okb (holds/mod 4 {is_id mul one})
     , okb (holds/mod 5 {is_id mul one})
     , okb (holds/mod 6 {is_id mul one})
     , okb (holds/mod 7 {is_id mul one})
-    , report "associative add"
+    , section "associative add"
     , okb (holds/mod 2 {associative add})
     , okb (holds/mod 3 {associative add})
     , okb (holds/mod 4 {associative add})
     , okb (holds/mod 5 {associative add})
     , okb (holds/mod 6 {associative add})
     , okb (holds/mod 7 {associative add})
-    , report "associative mul"
+    , section "associative mul"
     , okb (holds/mod 2 {associative mul})
     , okb (holds/mod 3 {associative mul})
     , okb (holds/mod 4 {associative mul})
     , okb (holds/mod 5 {associative mul})
     , okb (holds/mod 6 {associative mul})
     , okb (holds/mod 7 {associative mul})
-    , report "inverse"
+    , section "inverse"
     , okb (holds/mod 2 {hasinv})
     , okb (holds/mod 3 {hasinv})
     , kob (holds/mod 4 {hasinv})
     , okb (holds/mod 5 {hasinv})
     , kob (holds/mod 6 {hasinv})
     , okb (holds/mod 7 {hasinv})
-    , report "is_ring"
+    , section "is_ring"
     , okb (holds/mod 2 {is_ring})
     , okb (holds/mod 3 {is_ring})
     , okb (holds/mod 4 {is_ring})
