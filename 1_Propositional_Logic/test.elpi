@@ -33,7 +33,7 @@ type ok-eq A -> (A -> prop) -> test.
 pred run-test i:test, o:outcome.
 
 run-test (section Msg) (ignore "Section title.") :-
-    when-verbosity terse (print "Section:" Msg).
+    when-verbosity terse (print "** Section:" Msg).
 
 run-test (ok P) (success "") :- P, !.
 run-test (ok _) (failure "").
@@ -44,7 +44,9 @@ run-test (ko _) (success "Call fails, as expected.").
 run-test (ok-eq A P) Ret :- P Out, !,
     if (equal Out A)
        (Ret = success "")
-       (Ret = failure "Wrong return value.").
+       (S is "Wrong return value.\nExpected: " ^ {term_to_string A} ^
+              "\n  Result: " ^ {term_to_string Out},
+        Ret = failure S).
 run-test (ok-eq _ _) (failure "No solution found.").
 
 run-test (okb P) Ret :-
