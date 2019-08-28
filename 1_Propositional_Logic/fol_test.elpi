@@ -2,7 +2,11 @@
 %%% Simple test for FOL.
 %%% ===========================================================================
 
+accumulate lib.
+accumulate formula.
+accumulate prop.
 accumulate fol.
+accumulate testing.
 
 %%% ---------------------------------------------------------------------------
 %%% Model.
@@ -56,8 +60,6 @@ eval (t X) B :- eval_t {termval X} B.
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
-
-accumulate testing.
 
 shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 

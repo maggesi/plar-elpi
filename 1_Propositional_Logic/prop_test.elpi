@@ -2,13 +2,14 @@
 %%% Tests for prop.
 %%% =========================================================================== 
 
+accumulate lib.
+accumulate formula.
 accumulate prop.
+accumulate testing.
 
 type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
-
-accumulate testing.
 
 shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 

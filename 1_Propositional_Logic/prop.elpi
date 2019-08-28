@@ -1,8 +1,8 @@
 %%% ===========================================================================
 %%% Basic stuff for propositional logic: datatype, parsing and printing.
+%%%
+%%% Needs: lib, formula.
 %%% ===========================================================================
-
-accumulate formula.
 
 pred eval i:formula, o:bool.
 :if "DBG:HOLDS"

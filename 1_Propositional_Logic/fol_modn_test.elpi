@@ -2,7 +2,11 @@
 %%% Modular arithmetic interpretation.
 %%% ===========================================================================
 
+accumulate lib.
+accumulate formula.
+accumulate prop.
 accumulate fol.
+accumulate testing.
 
 %%% ---------------------------------------------------------------------------
 %%% Miscellanea.
@@ -121,8 +125,6 @@ is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
-
-accumulate testing.
 
 shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 

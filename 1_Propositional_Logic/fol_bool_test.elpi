@@ -2,7 +2,11 @@
 %%% Boolean interpretation.
 %%% ===========================================================================
 
+accumulate lib.
+accumulate formula.
+accumulate prop.
 accumulate fol.
+accumulate testing.
 
 %%% ---------------------------------------------------------------------------
 %%% Language.
@@ -28,8 +32,6 @@ holds (eq X Y) B :- iffb {termval X} {termval Y} B.
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
-
-accumulate testing.
 
 shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 

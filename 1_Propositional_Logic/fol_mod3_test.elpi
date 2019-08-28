@@ -2,7 +2,11 @@
 %%% Mod 3 interpretation.
 %%% ===========================================================================
 
+accumulate lib.
+accumulate formula.
+accumulate prop.
 accumulate fol.
+accumulate testing.
 
 %%% ---------------------------------------------------------------------------
 %%% Model, language, interpretation.
@@ -43,8 +47,6 @@ holds/3 P B :-
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
-
-accumulate testing.
 
 shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 

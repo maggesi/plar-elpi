@@ -2,7 +2,11 @@
 %%% Generic infrastructure.
 %%% ===========================================================================
 
+accumulate lib.
+accumulate formula.
+accumulate prop.
 accumulate fol.
+accumulate testing.
 
 %%% ---------------------------------------------------------------------------
 %%% Generic terms.
@@ -50,8 +54,6 @@ atomval "=" [A, B] C :- iffb A B C.
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
-
-accumulate testing.
 
 shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 

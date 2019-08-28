@@ -2,6 +2,9 @@
 %%% Skolemization.
 %%% ===========================================================================
 
+accumulate lib.
+accumulate formula.
+accumulate prop.
 accumulate fol.
 
 % Skolemized formulas
