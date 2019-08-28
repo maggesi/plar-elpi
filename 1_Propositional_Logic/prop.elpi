@@ -1,8 +1,11 @@
 %%% ===========================================================================
 %%% Basic stuff for propositional logic: datatype, parsing and printing.
 %%%
-%%% Needs: lib, formula.
+%%% Needs: lib, verbosity, formula.
 %%% ===========================================================================
+
+shorten verbosity.{ verbosity, quiet, terse, info, verbose, debug,
+                    when-verbosity, with-verbosity }.
 
 pred eval i:formula, o:bool.
 :if "DBG:HOLDS"

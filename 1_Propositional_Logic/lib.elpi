@@ -64,34 +64,3 @@ insert A L [A|L].
 pred union i:list A, i:list A, o:list A.
 union [] L L.
 union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
-
-%% ----------------------------------------------------------------------------
-%% Verbosity, error reporting.
-%% ----------------------------------------------------------------------------
-
-type quiet, terse, info, verbose, debug verbosity.
-
-kind verbosity type.
-
-pred verbosity-level o:verbosity, o:int.
-verbosity-level quiet   0.
-verbosity-level terse   1.
-verbosity-level info    2.
-verbosity-level verbose 3.
-verbosity-level debug   4.
-
-pred current-verbosity-level o:int.
-current-verbosity-level 1. % Terse.
-
-pred when-verbosity i:verbosity, i:prop.
-when-verbosity V _ :-
-    current-verbosity-level Current_Level,
-    verbosity-level V Vlevel,
-    Current_Level i< Vlevel,
-    !.
-when-verbosity _ P :- P.
-
-pred with-verbosity i:verbosity, i:prop.
-with-verbosity V P :-
-    verbosity-level V N,
-    (current-verbosity-level N :- !) => P.

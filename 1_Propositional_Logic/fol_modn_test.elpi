@@ -4,9 +4,10 @@
 
 accumulate lib.
 accumulate formula.
+accumulate verbosity.
 accumulate prop.
 accumulate fol.
-accumulate testing.
+accumulate test.
 
 %%% ---------------------------------------------------------------------------
 %%% Miscellanea.
@@ -126,7 +127,8 @@ is_ring ((ex z \ AddMon z && HasZero z) && (ex u \ MulMon u) && Distr) :-
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
 
-shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
 main :-
     with-verbosity quiet (run-tests

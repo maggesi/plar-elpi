@@ -4,14 +4,16 @@
 
 accumulate lib.
 accumulate formula.
+accumulate verbosity.
 accumulate prop.
-accumulate testing.
+accumulate test.
 
 type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
-shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
 %%% ---------------------------------------------------------------------------
 %%% Run tests.

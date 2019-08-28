@@ -4,9 +4,10 @@
 
 accumulate lib.
 accumulate formula.
+accumulate verbosity.
 accumulate prop.
 accumulate fol.
-accumulate testing.
+accumulate test.
 
 %%% ---------------------------------------------------------------------------
 %%% Model.
@@ -61,7 +62,8 @@ eval (t X) B :- eval_t {termval X} B.
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
 
-shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
 main :-
     with-verbosity quiet (run-tests

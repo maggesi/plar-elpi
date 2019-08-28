@@ -3,7 +3,8 @@
 %%% ===========================================================================
 
 accumulate lib.
-accumulate testing.
+accumulate verbosity.
+accumulate test.
 
 %%% ---------------------------------------------------------------------------
 %%% Accessory definitions.
@@ -18,7 +19,8 @@ fun 2 tt.
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
 
-shorten testing.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
 main :-
     with-verbosity quiet (run-tests

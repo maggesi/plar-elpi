@@ -4,7 +4,10 @@
 %%% Need: lib (for verbosity).
 %%% ===========================================================================
 
-namespace testing {
+shorten verbosity.{ quiet, terse, info, verbose, debug,
+                    with-verbosity, when-verbosity }.
+
+namespace test {
 
 %% ----------------------------------------------------------------------------
 %% Ontology for tests, outcomes, statistics.
@@ -18,8 +21,8 @@ type success, failure, ignore string -> outcome.
 %% Basic stock of predefined tests.
 %%
 %% More tests can be defined by:
-%%   1. Adding a new constructor for the type `test`.
-%%   2. Adding more clauses to `testing.run-test`.
+%%   1. Adding a new constructor for the type `test.test`.
+%%   2. Adding more clauses to `test.run-test`.
 %% ----------------------------------------------------------------------------
 
 type section string -> test.

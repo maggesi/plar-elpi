@@ -1,0 +1,34 @@
+%%% ===========================================================================
+%%% Verbosity, error reporting.
+%%% ===========================================================================
+
+namespace verbosity { 
+
+type quiet, terse, info, verbose, debug verbosity.
+
+kind verbosity type.
+
+pred verbosity-level o:verbosity, o:int.
+verbosity-level quiet   0.
+verbosity-level terse   1.
+verbosity-level info    2.
+verbosity-level verbose 3.
+verbosity-level debug   4.
+
+pred current-verbosity-level o:int.
+current-verbosity-level 1. % Terse.
+
+pred when-verbosity i:verbosity, i:prop.
+when-verbosity V _ :-
+    current-verbosity-level Current_Level,
+    verbosity-level V Vlevel,
+    Current_Level i< Vlevel,
+    !.
+when-verbosity _ P :- P.
+
+pred with-verbosity i:verbosity, i:prop.
+with-verbosity V P :-
+    verbosity-level V N,
+    (current-verbosity-level N :- !) => P.
+
+}
