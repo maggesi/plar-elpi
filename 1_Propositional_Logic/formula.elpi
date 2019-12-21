@@ -19,33 +19,6 @@ infixr ==> 6.
 infixr <=> 6.
 
 %%% ---------------------------------------------------------------------------
-%%% Basic manipulation procedures.
-%%% ---------------------------------------------------------------------------
-
-pred dest_and i:formula, o:formula, o:formula.
-dest_and (P && Q) P Q.
-
-pred conjuncts i:formula, o:list formula.
-conjuncts (P && Q) L :- !, std.append {conjuncts P} {conjuncts Q} L.
-conjuncts P [P].
-
-pred dest_or i:formula, o:formula, o:formula.
-dest_or (P !! Q) P Q.
-
-pred disjuncts i:formula, o:list formula.
-disjuncts (P !! Q) L :- !, std.append {disjuncts P} {disjuncts Q} L.
-disjuncts P [P].
-
-pred dest_imp i:formula, o:formula, o:formula.
-dest_imp (P ==> Q) P Q.
-
-pred antecedent i:formula, o:formula.
-antecedent (P ==> _Q) P.
-
-pred consequent i:formula, o:formula.
-consequent (_P ==> Q) Q.
-
-%%% ---------------------------------------------------------------------------
 %%% Basic iteration.
 %%% ---------------------------------------------------------------------------
 
@@ -84,22 +57,8 @@ fold (P ==> Q) A A1 :- !, fold Q A B, fold P B A1.
 fold (P <=> Q) A A1 :- !, fold Q A B, fold P B A1.
 
 %%% ---------------------------------------------------------------------------
-%%% Non atomic formulas.
-%%% We will add new clauses to this predicate when we extend the syntax to
-%%% predicate logic and introduce quantifiers.
-%%% ---------------------------------------------------------------------------
-
-pred nonatomic i:formula.
-nonatomic   (neg _).
-nonatomic (_ &&  _).
-nonatomic (_ !!  _).
-nonatomic (_ <=> _).
-nonatomic (_ ==> _).
-
-%%% ---------------------------------------------------------------------------
 %%% Atomic formulas.
-%%% Intuitively, this should be the negation of the predicate nonatomic above.
-%%% However, this predicate is introduced here with no clauses.
+%%% This predicate is introduced here with no clauses.
 %%% Clauses for this predicate will be added locally when needed.
 %%% ---------------------------------------------------------------------------
 

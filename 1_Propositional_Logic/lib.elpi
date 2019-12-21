@@ -31,10 +31,6 @@ iffb ff ff tt.
 iffb ff tt ff.
 iffb tt ff ff.
 
-pred reflect i:prop, o:bool.
-reflect P tt :- P, !.
-reflect _ ff.
-
 %%% ---------------------------------------------------------------------------
 %%% Boolean operations on lists.
 %%% ---------------------------------------------------------------------------
@@ -49,10 +45,6 @@ existsb [] _F ff.
 existsb [X|_] F tt :- F X tt, !.
 existsb [_|Xs] F B :- existsb Xs F B.
 
-pred std.exists! i:list A, i:(A -> prop).
-std.exists! [X|_] P :- P X, !.
-std.exists! [_|L] P :- std.exists! L P.
-
 %%% ---------------------------------------------------------------------------
 %%% Set-like operations on lists.
 %%% ---------------------------------------------------------------------------
@@ -60,7 +52,3 @@ std.exists! [_|L] P :- std.exists! L P.
 pred insert i:A, i:list A, o:list A.
 insert A L L :- std.mem L A, !.
 insert A L [A|L].
-
-pred union i:list A, i:list A, o:list A.
-union [] L L.
-union [A|L1] L2 L3 :- union L1 {insert A L2} L3.
