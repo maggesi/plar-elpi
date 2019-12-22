@@ -63,4 +63,7 @@ main :-
     , okb (holds/3 (ex  X \ eq (add X  one)  two))
     , okb (holds/3 (all X \ eq (mul X zero) zero))
     , kob (holds/3 (ex  X \ eq (mul X zero)  one))
+    , okb (holds/3 (all X \ all Y \ eq (add X Y) (add Y X)))
+    , okb (holds/3 (all X \ all Y \ eq (mul X Y) (mul Y X)))
+    , kob (holds/3 (all X \ all Y \ eq (add X Y) (mul Y X)))
     ]).

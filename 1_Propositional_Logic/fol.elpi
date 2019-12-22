@@ -4,22 +4,26 @@
 %%% Needs: lib, formula, prop.
 %%% ===========================================================================
 
-% Terms.
+%%% ---------------------------------------------------------------------------
+%%% Terms and quantifiers.
+%%% ---------------------------------------------------------------------------
+
 kind term type.
 
+type all, ex (term -> formula) -> formula.
+
+% Copy predicated for terms.
+% Clauses to be defined locally or when the language of term is specified.
 pred copy/tm i:term, o:term.
 
+% Higher-order predicate pi/tm updates clauses for predicate copy/tm.
 pred pi/tm i:(term -> prop).
 pi/tm P :-
     pi c \ (copy/tm c c :- !) => P c.
 
-% Quantifiers.
-type all, ex (term -> formula) -> formula.
-
-% Closed formulas.
-kind formula/c type.
-type formula/c formula -> formula/c.
-type ctx (term -> formula/c) -> formula/c.
+%%% ---------------------------------------------------------------------------
+%%% Extend the copy/fm for Propositional calculus.
+%%% ---------------------------------------------------------------------------
 
 % Mapping on formulas.
 copy/fm (all P) (all P1) :- pi/tm c \ copy/fm (P c) (P1 c).
@@ -47,6 +51,14 @@ holds P B :-
 
 pred augment i:(term -> formula), i:A, o:bool.
 augment P X B :- pi c \ (termval c X :- !) => eval (P c) B.
+
+%%% ---------------------------------------------------------------------------
+%%% Closed formulas.
+%%% ---------------------------------------------------------------------------
+
+kind formula/c type.
+type formula/c formula -> formula/c.
+type ctx (term -> formula/c) -> formula/c.
 
 pred holds/c i:formula/c, o:bool.
 holds/c (formula/c P) B :- holds P B.

@@ -41,4 +41,8 @@ main :-
     with-verbosity quiet (run-tests
     [ section "Fol bool"
     , okb (holds/c (ctx X\ ctx Y\ formula/c (eq (add X Y) (add Y X))))
+    , okb (holds/c (ctx X\ ctx Y\ formula/c (eq (mul X Y) (mul Y X))))
+    , okb (holds/c (ctx X\ formula/c (eq (add X X) X)))
+    , kob (holds/c (ctx X\ ctx Y \ formula/c (eq (add X Y) (mul X Y))))
+    , kob (holds/c (ctx X\ ctx Y \ formula/c (eq (mul X Y) X)))
     ]).
