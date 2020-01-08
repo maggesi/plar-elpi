@@ -1,7 +1,5 @@
 ### ===========================================================================
-### Container for running Elpi.
-###
-### Debian image with OCaml and Elpi.
+### Container for Elpi - Lambda Prolog interpreter
 ### ===========================================================================
 
 ### ---------------------------------------------------------------------------
@@ -13,9 +11,13 @@
 ###
 ###   $ docker build -t elpi-plar Docker
 ###
+### Ignore cached builds:
+###
+###   $ docker build -t elpi-plar --pull --no-cache Docker
+###
 ### To start the container:
 ###
-###   docker run --rm -it -v 'path-to-hol-dir:/home/opam/work' elpi-plar bash
+###   $ docker run --rm -it -v "${PWD}:/home/opam/work" elpi-plar bash
 ### ---------------------------------------------------------------------------
 
 ### ---------------------------------------------------------------------------
@@ -45,7 +47,7 @@ RUN git pull && \
 
 FROM ocaml-basics AS elpi-plar
 
-RUN opam pin add elpi git+https://github.com/lpcic/elpi && \
+RUN opam pin add elpi git+https://github.com/lpcic/elpi#v1.9.0 && \
     opam update && \
     opam install elpi
 
