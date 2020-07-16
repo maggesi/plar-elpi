@@ -47,7 +47,7 @@ RUN git pull && \
 
 FROM ocaml-basics AS elpi-plar
 
-RUN opam pin add elpi git+https://github.com/lpcic/elpi#v1.9.0 && \
+RUN opam pin add elpi git+https://github.com/lpcic/elpi#v1.11.2 && \
     opam update && \
     opam install elpi
 
