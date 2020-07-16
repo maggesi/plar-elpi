@@ -7,19 +7,36 @@ accumulate formula.
 accumulate prop.
 accumulate fol.
 
-% Skolemized formulas
+%%% ---------------------------------------------------------------------------
+%%% Datatype for skolemized formulas.
+%%% ---------------------------------------------------------------------------
+
+% Type.
 kind formula/sk type.
 
+% Embedding of formulas in skolemized formulas.
 type formula/sk formula -> formula/sk.
-type var/sk (term -> formula/sk) -> formula/sk.
-type func/sk ((list term -> term) -> formula/sk) -> formula/sk.
 
+% Universal quantification for skolemized formulas. 
+type all/sk (term -> formula/sk) -> formula/sk.
+
+% Function symbol (introduced by the skolemization process).
+% Arguments to function symbols are passed as lists.
+type sym/sk ((list term -> term) -> formula/sk) -> formula/sk.
+
+%%% ---------------------------------------------------------------------------
+%%% Skolemization predicate.
+%%% ---------------------------------------------------------------------------
+
+% Main predicate.
 pred skolem i:formula, o:formula/sk.
 skolem P Q :- skolem.aux P [] Q.
 
+% Auxiliary predicate.
+% Takes as input an additional argument with the list of traversed
+% universal quantified variables.
 pred skolem.aux i:formula, i:list term, o:formula/sk.
-skolem.aux (all P) Xs (var/sk Q) :- !,
-    pi c \ skolem.aux (P c) [c|Xs] (Q c).
-skolem.aux (ex  P) Xs (func/sk F \ Q (F Xs)) :- !,
-    pi c \ skolem.aux (P c) Xs (Q c).
+skolem.aux (all P) Xs (all/sk Q) :- !, pi c \ skolem.aux (P c) [c|Xs] (Q c).
+skolem.aux (ex  P) Xs (sym/sk F \ Q (F Xs)) :- !, pi c \ skolem.aux (P c) Xs (Q c).
+% skolem.aux (P1 && P2) Xs (Q1 && Q2) :- !, skolem.aux P1 X2 Q1, skolem.aux P1 X2 Q1.
 skolem.aux P _Xs (formula/sk P).
