@@ -75,7 +75,7 @@ run-tests Tests :-
     [ when-verbosity terse (print "run-tests: Start.")
     , run-tests-iter Tests (test-stats 0 0) (test-stats S N)
     , when-verbosity terse (print "run-tests: Done!")
-    , when-verbosity quiet (print "Passed" S "out of" N)
+    , when-verbosity quiet (print "Passed" N "out of" S)
     ].
 
 pred run-tests-iter i:(list test), i:test-stats, o:test-stats.
