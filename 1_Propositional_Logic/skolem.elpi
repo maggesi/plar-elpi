@@ -11,32 +11,26 @@ accumulate fol.
 %%% Datatype for skolemized formulas.
 %%% ---------------------------------------------------------------------------
 
-% Type.
-kind formula/sk type.
+% Add quantifier for functor to the syntax of formulas.
+% A functor takes a list of terms and returns a term.
+type fc ((list term -> term) -> formula) -> formula.
 
-% Embedding of formulas in skolemized formulas.
-type formula/sk formula -> formula/sk.
+pred skolem i:formula, o:formula.
+skolem (P && Q) R :- !, ((pi P Q \ binop P Q (P && Q)) => skolem.binop P Q R).
+skolem (P !! Q) R :- !, ((pi P Q \ binop P Q (P !! Q)) => skolem.binop P Q R).
+skolem (ex P) (fc f \ Q (f [])) :- !, pi x \ skolem (P x) (Q x).
+skolem (all P) Q :- !, pi x \ skolem (P x) (Q1 x), skolem.all Q Q1.
+skolem P P.
 
-% Universal quantification for skolemized formulas. 
-type all/sk (term -> formula/sk) -> formula/sk.
+pred binop i:formula, i:formula, o:formula.
+pred skolem.binop i:formula, i:formula, o:formula.
+skolem.binop P Q R :- skolem P P1, skolem Q Q1, skolem.op P1 Q1 R.
 
-% Function symbol (introduced by the skolemization process).
-% Arguments to function symbols are passed as lists.
-type sym/sk ((list term -> term) -> formula/sk) -> formula/sk.
+pred skolem.op i:formula, i:formula, o:formula.
+skolem.op (fc P) Q (fc R) :- !, pi x \ skolem.op (P x) Q (R x).
+skolem.op P (fc Q) (fc R) :- !, pi x \ skolem.op P (Q x) (R x).
+skolem.op P Q R :- binop P Q R.
 
-%%% ---------------------------------------------------------------------------
-%%% Skolemization predicate.
-%%% ---------------------------------------------------------------------------
-
-% Main predicate.
-pred skolem i:formula, o:formula/sk.
-skolem P Q :- skolem.aux P [] Q.
-
-% Auxiliary predicate.
-% Takes as input an additional argument with the list of traversed
-% universal quantified variables.
-pred skolem.aux i:formula, i:list term, o:formula/sk.
-skolem.aux (all P) Xs (all/sk Q) :- !, pi c \ skolem.aux (P c) [c|Xs] (Q c).
-skolem.aux (ex  P) Xs (sym/sk F \ Q (F Xs)) :- !, pi c \ skolem.aux (P c) Xs (Q c).
-% skolem.aux (P1 && P2) Xs (Q1 && Q2) :- !, skolem.aux P1 X2 Q1, skolem.aux P1 X2 Q1.
-skolem.aux P _Xs (formula/sk P).
+pred skolem.all o:formula, i:(term -> formula).
+skolem.all (fc f \ all x \ P x (Xs \ f [x|Xs])) (x \ fc f \ P x f) :- !.
+skolem.all (all Q) Q.
