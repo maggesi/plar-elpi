@@ -29,11 +29,11 @@ shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 main :-
   with-verbosity quiet (run-tests
   [ section "Skolemization"
-  , (ok-eq (var/sk  X \ formula/sk (p X))         (skolem.aux (all X \ p X) [a,b]))
-  , (ok-eq (func/sk F \ formula/sk (p (F [a,b]))) (skolem.aux (ex  X \ p X) [a,b]))
-  , (ok-eq (func/sk X \ var/sk  Y \ formula/sk (r (X []) Y))  (skolem (ex  X \ all Y \ r X Y)))
-  , (ok-eq (var/sk  X \ func/sk Y \ formula/sk (r X (Y [X]))) (skolem (all X \ ex  Y \ r X Y)))
-  , (ok-eq (var/sk  X \ func/sk Y \ var/sk  Z \ formula/sk (r X (f (Y[X])   Z))) (skolem (all X \ ex  Y \ all Z \ r X (f Y Z))))
-  , (ok-eq (var/sk  X \ var/sk  Y \ func/sk Z \ formula/sk (r X (f Y (Z[Y,X])))) (skolem (all X \ all Y \ ex  Z \ r X (f Y Z))))
-  , (ok-eq (var/sk  X \ func/sk Y \ var/sk  Z \ formula/sk (r X (f X Z))) (skolem (all X \ ex Y \ all Z \ r X (f X Z))))
+  , (ok-eq (all/sk  X \ formula/sk (p X))         (skolem.aux (all X \ p X) [a,b]))
+  , (ok-eq (sym/sk F \ formula/sk (p (F [a,b]))) (skolem.aux (ex  X \ p X) [a,b]))
+  , (ok-eq (sym/sk X \ all/sk  Y \ formula/sk (r (X []) Y))  (skolem (ex  X \ all Y \ r X Y)))
+  , (ok-eq (all/sk  X \ sym/sk Y \ formula/sk (r X (Y [X]))) (skolem (all X \ ex  Y \ r X Y)))
+  , (ok-eq (all/sk  X \ sym/sk Y \ all/sk  Z \ formula/sk (r X (f (Y[X])   Z))) (skolem (all X \ ex  Y \ all Z \ r X (f Y Z))))
+  , (ok-eq (all/sk  X \ all/sk  Y \ sym/sk Z \ formula/sk (r X (f Y (Z[Y,X])))) (skolem (all X \ all Y \ ex  Z \ r X (f Y Z))))
+  , (ok-eq (all/sk  X \ sym/sk Y \ all/sk  Z \ formula/sk (r X (f X Z))) (skolem (all X \ ex Y \ all Z \ r X (f X Z))))
   ]).
