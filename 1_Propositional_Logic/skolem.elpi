@@ -7,30 +7,36 @@ accumulate formula.
 accumulate prop.
 accumulate fol.
 
-%%% ---------------------------------------------------------------------------
-%%% Datatype for skolemized formulas.
-%%% ---------------------------------------------------------------------------
+%% ----------------------------------------------------------------------------
+%% Add a quantifier for functors (term constructors) to the syntax of formulas.
+%% A functor takes a list of terms and returns a term.
+%% ----------------------------------------------------------------------------
 
-% Add quantifier for functor to the syntax of formulas.
-% A functor takes a list of terms and returns a term.
 type fc ((list term -> term) -> formula) -> formula.
 
+% Predicate used internally to store a boolean connective.
+pred binop i:formula, i:formula, o:formula.
+
+% Main predicate.
 pred skolem i:formula, o:formula.
-skolem (P && Q) R :- !, ((pi P Q \ binop P Q (P && Q)) => skolem.binop P Q R).
-skolem (P !! Q) R :- !, ((pi P Q \ binop P Q (P !! Q)) => skolem.binop P Q R).
 skolem (ex P) (fc f \ Q (f [])) :- !, pi x \ skolem (P x) (Q x).
 skolem (all P) Q :- !, pi x \ skolem (P x) (R x), skolem.all R Q.
+skolem (P && Q) R :- !, [pi P Q \ binop P Q (P && Q)] => skolem.binop P Q R.
+skolem (P !! Q) R :- !, [pi P Q \ binop P Q (P !! Q)] => skolem.binop P Q R.
 skolem P P.
 
-pred binop i:formula, i:formula, o:formula.
+% Skolemize an universal quantification.
+% The universal formula is passed without the universal quantifier.
+pred skolem.all i:(term -> formula), o:formula.
+skolem.all (x \ fc f \ P x f) (fc f \ all x \ P x (Xs \ f [x|Xs])) :- !.
+skolem.all Q (all Q).
+
+% Skolemize a conjunction or disjunction.
 pred skolem.binop i:formula, i:formula, o:formula.
 skolem.binop P Q R :- skolem P P1, skolem Q Q1, skolem.op P1 Q1 R.
 
+% Compose two skolemized formulas using a boolean connective.
 pred skolem.op i:formula, i:formula, o:formula.
 skolem.op (fc P) Q (fc R) :- !, pi x \ skolem.op (P x) Q (R x).
 skolem.op P (fc Q) (fc R) :- !, pi x \ skolem.op P (Q x) (R x).
 skolem.op P Q R :- binop P Q R.
-
-pred skolem.all i:(term -> formula), o:formula.
-skolem.all (x \ fc f \ P x f) (fc f \ all x \ P x (Xs \ f [x|Xs])) :- !.
-skolem.all Q (all Q).
