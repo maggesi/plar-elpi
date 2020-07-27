@@ -28,7 +28,13 @@ skolem P P.
 % Skolemize an universal quantification.
 % The universal formula is passed without the universal quantifier.
 pred skolem.all i:(term -> formula), o:formula.
-skolem.all (x \ fc f \ P x f) (fc f \ all x \ P x (Xs \ f [x|Xs])) :- !.
+% Questa clausola commentata non "propaga" skolem.
+% La successiva (non commentata) dovrebbe essere corretta.
+% skolem.all (x \ fc f \ P x f) (fc Q) :- !,
+%   pi f \ skolem.all (x \ P x (Xs \ f [x|Xs])) (Q f).
+skolem.all (x \ fc f \ P x f) (fc Q) :- !,
+  pi f \ skolem.all (x \ P x (Xs \ f [x|Xs])) (P1 f),
+         skolem (P1 f) (Q f).
 skolem.all Q (all Q).
 
 % Skolemize a conjunction or disjunction.
