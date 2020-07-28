@@ -44,4 +44,8 @@ main :-
            (skolem (all x \ ex y \ all z \ p z !! r x y)))
   , (ok-eq (fc f \ all x \ all z \ p z && r x (f[x,z]))
            (skolem (all x \ all z \ ex y \ p z && r x y)))
+  , (ok-eq (fc f \ fc g \ all y \ p y && r (f[y]) (g[y])))
+           (skolem (all y \ ex z \ ex w \ p y && r z w ))
+  , (ok-eq (fc f \ fc g \ all y \ all x \ r x y && r (f[y]) (g[y,x])))
+           (skolem (all y \ ex z \ all x \ ex w \ r x y && r z w ))
   ]).
