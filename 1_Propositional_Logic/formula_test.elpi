@@ -11,6 +11,14 @@ type p, q, r formula.
 
 atomic P :- std.mem! [p,q,r] P.
 
+copy/fm p p :- !.
+copy/fm q q :- !.
+copy/fm r r :- !.
+
+dcopy/fm p p :- !.
+dcopy/fm q q :- !.
+dcopy/fm r r :- !.
+
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
@@ -35,4 +43,7 @@ main :-
          ] => onatoms F (p && q !! r) R)
     , section "Test atoms"
     , ok-eq [p, q, r] (atoms (p && q !! r))
+    , section "Test simplify"
+    , ok-eq falsity (simplify (neg truth))
+    , ok-eq p (simplify (p && truth))
     ]).

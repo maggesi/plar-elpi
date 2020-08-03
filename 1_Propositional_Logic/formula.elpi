@@ -86,3 +86,21 @@ pred atoms i:formula, o:list formula.
 atoms P L :-
     (pi A L L1 \ fold A L L1 :- atomic A, !, insert A L L1)
     => fold P [] L.
+
+%%% ---------------------------------------------------------------------------
+%%% Simplification.
+%%% ---------------------------------------------------------------------------
+
+% Incomplete!  See psimplify1 in [Harrison].
+pred simplify1 i:formula, o:formula.
+simplify1 (neg truth) falsity.
+% ...
+simplify1 (neg (neg P)) P :- !.
+% ...
+simplify1 (P && truth) P :- !.
+
+pred simplify2 i:formula, o:formula.
+simplify2 P P1 :- std.spy (simplify1 P P1).
+
+pred simplify i:formula, o:formula.
+simplify P P1 :- (pi X X1 \ copy1/fm X X1 :- simplify1 X X1) => dcopy/fm P P1.
