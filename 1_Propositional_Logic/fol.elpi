@@ -78,11 +78,8 @@ quantify Quant P P1 :-
        (copy/tm c c => copy/fm Pc P1)
        (copy/tm c c => copy/fm Pc (Q c), P1 = Quant Q).
 
-pred simplify i:formula, o:formula.
-simplify P P1 :-
-    [ (pi P P1 \ copy/fm (all P) P1 :- !, quantify all P P1)
-    , (pi P P1 \ copy/fm (ex  P) P1 :- !, quantify ex  P P1)
-    ] => copy/fm P P1.
+simplify1 (all P) P1 :- !, quantify all P P1.
+simplify1 (ex  P) P1 :- !, quantify ex  P P1.
 
 %%% ---------------------------------------------------------------------------
 %%% Negational normal form.
