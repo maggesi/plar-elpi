@@ -46,3 +46,24 @@ pred skolem.op i:formula, i:formula, o:formula.
 skolem.op (fc P) Q (fc R) :- !, pi x \ skolem.op (P x) Q (R x).
 skolem.op P (fc Q) (fc R) :- !, pi x \ skolem.op P (Q x) (R x).
 skolem.op P Q R :- binop P Q R.
+
+% skolemize e askolemize come vengono fatti da harrison
+
+pred askolemize i: formula, o: formula.
+askolemize P Q :- simplify P P1, nnf P1 P2, skolem P2 Q.
+
+pred skolemize i: formula, o: formula.
+skolemize P Q :- askolemize P P1, fcpnf P1 Q.
+
+% Predicato di copia per le liste di termini
+
+pred copy/tms i: list term, o: list term.
+copy/tms [] [].
+copy/tms [X|Xs] [X1|Xs1] :- copy/tm X X1, copy/tms Xs Xs1.
+
+% Un predicato di forma normale prenessa che sa che farsene di fc
+
+pred fcpnf i: formula, o: formula.
+fcpnf (fc P) (fc P1) :- !, pi c \ [pi args args1\ copy/tm (c args) (c args1) :- !, copy/tms args args1] 
+        => fcpnf (P c) (P1 c). 
+fcpnf P P1 :- pnf P P1.

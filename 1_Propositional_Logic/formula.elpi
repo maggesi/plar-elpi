@@ -91,16 +91,28 @@ atoms P L :-
 %%% Simplification.
 %%% ---------------------------------------------------------------------------
 
-% Incomplete!  See psimplify1 in [Harrison].
+% See psimplify1 in [Harrison].
 pred simplify1 i:formula, o:formula.
 simplify1 (neg truth) falsity.
-% ...
+simplify1 (neg falsity) truth.
 simplify1 (neg (neg P)) P :- !.
-% ...
+simplify1 (neg P) (neg P) :- !.
+simplify1 (_P && falsity) falsity :- !. 
+simplify1 (falsity && _P) falsity :- !. 
 simplify1 (P && truth) P :- !.
-
-pred simplify2 i:formula, o:formula.
-simplify2 P P1 :- std.spy (simplify1 P P1).
+simplify1 (truth && P) P :- !.
+simplify1 (P !! falsity) P :- !.
+simplify1 (falsity !! P) P :- !.
+simplify1 (_P !! truth) truth :- !.
+simplify1 (truth !! _P) truth :- !.
+simplify1 (falsity ==> _P) truth :- !.
+simplify1 (_P ==> truth) truth :- !.
+simplify1 (truth ==> P) P :- !.
+simplify1 (P ==> falsity) (neg P) :- !.
+simplify1 (P <=> truth) P :- !.
+simplify1 (truth <=> P) P :- !.
+simplify1 (P <=> falsity) P1 :- simplify1 (neg P) P1, !.
+simplify1 (falsity <=> P) P1 :- simplify1 (neg P) P1, !.
 
 pred simplify i:formula, o:formula.
 simplify P P1 :- (pi X X1 \ copy1/fm X X1 :- simplify1 X X1) => dcopy/fm P P1.

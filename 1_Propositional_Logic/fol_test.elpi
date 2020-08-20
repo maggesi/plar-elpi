@@ -80,21 +80,22 @@ main :-
     , okb (holds/c (ctx a\ formula/c (r a !! r x)))
     , kob (holds/c (ctx a\ formula/c (r a && r x)))
     , section "simplify"
-    , ok-eq (all X \ r X) (simplify (all X \ ex U \ r X))
-    , ok-eq (all X \ r X && t y) (simplify (all X \ ex U \ r X && ex Y \ t y))
+    , ok-eq (all X \ r X) (simplify (all X \ ex U \ r X))   
+    , ok-eq (all X \ r X && t y) (simplify (all X \ ex U \ r X && ex Y \ t y)) 
+    , section "nnf"
+    , ok-eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
     , ok-eq (neg (r x) !! neg (r y)) (nnf (neg (r x && r y)))
     , ok-eq ((ex X \ neg (r X)) !! r y)
             (nnf (neg ((all X \ r X) && ex X \ neg (r y))))
-    , section "nnf"
-    , ok-eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
     , section "prenex"
     , ok-eq (ex X \ neg (r X)) (prenex (ex X \ neg (r X)))
+    , ok-eq (all X \ all Y \ r X && r Y) (prenex (all X \ r X && (all Y \ r Y)))
     , section "pnf"
     , ok-eq (ex X \ neg (r X) !! r x) (pnf (neg (all X \ r X) !! r x))
-    , ok-eq (neg (all X \ r X) !! r x && r x)
-            (simplify (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x)))
+    , ok-eq (ex X \ neg (r X) !! r x && r x)
+            (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x))) 
     , ok-eq (ex X \ neg (r X) !! r x && t x)
             (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
     , ok-eq (ex X \ ex Y \ neg (r X) && neg (r Y) !! neg (r X))
             (pnf ((ex X \ neg (all Y \ r X !! r Y)) !! neg (all X \ r X)))
-    ]).
+     ]).

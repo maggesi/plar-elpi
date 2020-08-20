@@ -80,6 +80,7 @@ quantify Quant P P1 :-
 
 simplify1 (all P) P1 :- !, quantify all P P1.
 simplify1 (ex  P) P1 :- !, quantify ex  P P1.
+simplify1 P P :- !.
 
 %%% ---------------------------------------------------------------------------
 %%% Negational normal form.
@@ -127,7 +128,7 @@ pullquants P P.
 
 pred prenex i:formula, o:formula.
 prenex P P1 :-
-    (pi P P1 \ copy1/fm P P1 :- pullquants P P1)
+    (pi P P1 \ copy1/fm P P1 :- pullquants P P1, !)
     => dcopy/fm P P1.
 
 pred pnf i:formula, o:formula.
