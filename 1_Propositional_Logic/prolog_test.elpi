@@ -1,0 +1,75 @@
+%%% ===========================================================================
+%%% Tests for Prolog.
+%%% ===========================================================================
+
+accumulate lib.
+accumulate formula.
+accumulate prop.
+accumulate fol.
+accumulate verbosity.
+accumulate test.
+accumulate prolog.
+
+type u formula.
+type p term -> formula.
+type r, q term -> term -> formula.
+type a, b, c, d, e, f, g term.
+type f term -> term -> term.
+
+type nonno term -> term -> formula.
+type padre term -> term -> formula.
+type eustacchio, ildio, parisio term.
+
+%%% ---------------------------------------------------------------------------
+%%% Run tests.
+%%% ---------------------------------------------------------------------------
+
+shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
+shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
+
+main :-
+    with-verbosity quiet (run-tests
+    [ section "Test hornify"
+    , section "Test prolog"
+    , (ok (prolog [] truth))
+    , (ok (prolog [(truth ==> padre eustacchio parisio),(truth ==> padre parisio ildio)] truth))
+    , (ok (prolog [] (truth && truth)))
+    , (ok (prolog [] (padre eustacchio parisio !! truth)))
+    , (ko (prolog [] (truth && padre parisio ildio)))
+    , (ok (prolog [(truth ==> padre parisio ildio)] (truth && padre parisio ildio)))
+    , (ok (Prog = [(truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)], 
+      Prog = [C|Cs], backchain Prog C Cs (padre eustacchio parisio)))
+    
+    , section "Test backchain"
+
+    , (ok (prolog [(all x \ truth ==> padre eustacchio x), (truth ==> padre parisio ildio)] 
+        (padre eustacchio parisio)))
+    , (ok (prolog [(all x \ truth ==> padre eustacchio x), (truth ==> padre parisio ildio)] 
+        (ex x \ padre x parisio)))
+    , (ok (prolog [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
+        (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
+        (nonno eustacchio ildio))) 
+    , (ok (prolog [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
+        (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)]
+        (ex x \ ex y \ nonno x y)))
+    , section "Test start"
+
+    , (ok-eq (padre eustacchio parisio) (start [(all x \ truth ==> padre eustacchio x), 
+      (truth ==> padre parisio ildio)] (expr x \ padre x parisio))) 
+    ,(ok-eq (padre eustacchio parisio) (start [(all x \ truth ==> padre eustacchio x), 
+      (truth ==> padre parisio ildio)] (expr x \ padre eustacchio x))) 
+    , (ok-eq (nonno eustacchio ildio) (start [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
+      (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
+      (expr x \ nonno eustacchio x)))
+    , (ok-eq (nonno eustacchio ildio) (start [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
+      (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
+      (expr x \ nonno x ildio)))
+      % == Il prossimo test non va == Ci sono due quantificatori == %
+    , (ok-eq (nonno eustacchio ildio) (start [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
+      (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
+      (expr x \ expr y \ nonno x y)))
+    , (ok )
+    ]).
+
+
+

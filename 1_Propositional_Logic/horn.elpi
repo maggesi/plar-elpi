@@ -1,0 +1,39 @@
+accumulate lib.
+accumulate formula.
+accumulate prop.
+accumulate fol.
+accumulate skolem.
+accumulate verbosity.
+accumulate test.
+
+% ==== HORNIFY ==== %
+
+% pred hornify i: formula, o:formula.
+% hornify (P !! S) (Q ==> S) :- nnf P P2, dcopy/fm P2 Q.
+% hornify (neg P) (Q ==> falsity) :- dcopy/fm P Q.
+
+
+% ==== PROLOG ==== %
+
+% ==== Seconda versione, usando formula ==== %
+
+
+% ===================================================== %
+
+pred prolog i: list formula, o: formula.
+% prolog Prog Q.
+
+% prolog _Prog truth.
+
+prolog _Prog truth.
+prolog Prog (Q1 && Q2) :- prolog Prog  Q1, prolog Prog Q2. 
+prolog Prog (Q1 !! Q2) :- prolog Prog  Q1; prolog Prog Q2. 
+prolog Prog (ex Q) :- sigma x \ prolog Prog (Q x).
+prolog [C|Cs] Q :- backchain [C|Cs] C Cs Q.
+
+pred backchain i: list formula, i: formula, i: list formula, o: formula.
+% backchain Prog C Cs Q.
+
+backchain Prog (Qs ==> Q) _Cs Q :- prolog Prog Qs.
+backchain Prog (all C) Cs Q :- sigma x \ backchain Prog (C x) Cs Q.
+backchain Prog _C [C|Cs] Q :- backchain Prog C Cs Q.
