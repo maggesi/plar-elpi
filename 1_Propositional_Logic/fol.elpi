@@ -137,14 +137,3 @@ pnf P P1 :-
     nnf Q1 Q2, !,
     prenex Q2 P1.
 
-%%% ---------------------------------------------------------------------------
-%%% De Morgan Laws.
-%%% ---------------------------------------------------------------------------
-
-pred demorgan1 i: formula, o: formula.
-demorgan1 (X && Y) (X1 !! Y1) :- negate X1 X, negate Y1 Y, !.
-
-pred demorgan2 i: formula, o: formula.
-
-pred cnf1 i: formula, o: formula.
-cnf1 P P1 :- simplify P Q, nnf Q P1.
