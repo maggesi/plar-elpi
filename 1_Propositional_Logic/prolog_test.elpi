@@ -11,14 +11,46 @@ accumulate test.
 accumulate prolog.
 
 type u formula.
-type p term -> formula.
-type r, q term -> term -> formula.
-type a, b, c, d, e, f, g term.
+type p, pp term -> formula.
+type r, q, g term -> term -> formula.
+type h term -> term -> term -> formula.
+type a, b, c, d, e, f term.
 type f term -> term -> term.
+type zo term.
 
-type nonno term -> term -> formula.
-type padre term -> term -> formula.
-type eustacchio, ildio, parisio term.
+
+atomic u.
+atomic (r _X _Y).
+atomic (q _X _Y).
+atomic (g _X _Y).
+atomic (leq _X _Y).
+atomic (append/t _X _Y _Z).
+
+
+type s term -> term.
+type leq term -> term -> formula.
+
+% type all, ex, exprn (int -> formula) -> formula.
+% query (ex X) :- pi x \ query (X x).
+% query (exprn _X). 
+% hornrule (all X) (all Y) :- pi x \ hornrule (X x) (Y x).
+% topprolog Prog (exprn Q) Q1 :- !, sigma x \ topprolog Prog (Q x) Q1.
+% simpleprolog Prog (ex Q) :- sigma x \ simpleprolog Prog (Q x).
+% backchain Prog (all C) Cs Q :- sigma x \ backchain Prog (C x) Cs Q.
+
+type append/t term -> term -> term -> formula.
+type nil/t term.
+type cons/t term -> term -> term.
+
+% type all, ex, exprlist (list term -> formula) -> formula.
+
+% query (ex X) :- pi x \ query (X x).
+% query (exprlist _X).
+% hornrule (all X) (all Y) :- pi x \ hornrule (X x) (Y x).
+% topprolog Prog (exprlist Q) Q1 :- !, sigma x \ topprolog Prog (Q x) Q1.
+% simpleprolog Prog (ex Q) :- sigma x \ simpleprolog Prog (Q x).
+% backchain Prog (all C) Cs Q :- sigma x \ backchain Prog (C x) Cs Q.
+
 
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
@@ -27,49 +59,207 @@ type eustacchio, ildio, parisio term.
 shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
-main :-
+main :- 
     with-verbosity quiet (run-tests
-    [ section "Test hornify"
-    , section "Test prolog"
-    , (ok (prolog [] truth))
-    , (ok (prolog [(truth ==> padre eustacchio parisio),(truth ==> padre parisio ildio)] truth))
-    , (ok (prolog [] (truth && truth)))
-    , (ok (prolog [] (padre eustacchio parisio !! truth)))
-    , (ko (prolog [] (truth && padre parisio ildio)))
-    , (ok (prolog [(truth ==> padre parisio ildio)] (truth && padre parisio ildio)))
-    , (ok (Prog = [(truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)], 
-      Prog = [C|Cs], backchain Prog C Cs (padre eustacchio parisio)))
-    
+
+    [ section "Test hornrule"
+
+    , (ok-eq (truth ==> u) (hornrule (u)))
+    , (ok-eq (truth ==> r a b) (hornrule (r a b)))
+    , (ok-eq ((r a b && q a c) ==> g b c) 
+      (hornrule ((r a b && q a c) ==> g b c)))
+    , (ok-eq (all x \ all y \ all z \ (r x y && q x z) ==> g y z) 
+      (hornrule (all x \ all y \ all z \ (r x y && q x z) ==> g y z)))
+
+    , section "Test hornprog"
+
+    , (ok-eq [(truth ==> u)] (hornprog [u]))
+    , (ok-eq ([(truth ==> r a b)]) (hornprog [(r a b)]))  
+    , (ok-eq [((r a b && q a c) ==> g b c)]
+      (hornprog [((r a b && q a c) ==> g b c)]))
+    , (ok-eq ([(all x \ all y \ all z \ (r x y && q x z) ==> g y z)]) 
+      (hornprog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z)]))
+    , (ok-eq ([(all x \ all y \ all z \ (r x y && q x z) ==> g y z), 
+               ((r a b && q a c) ==> g b c),(truth ==> r a b), (truth ==> u)]) 
+      (hornprog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z), 
+              ((r a b && q a c) ==> g b c), (r a b), u]))
+
+    , section "Test simpleprolog"
+
+    , (ok (simpleprolog [] truth))
+    , (ok (simpleprolog [] (truth && truth)))
+    , (ok (simpleprolog [] (r a c !! truth)))
+    , (ko (simpleprolog [] (truth && r c b)))
+    , (ok (simpleprolog [(truth ==> r a c),(truth ==> r c b)] truth))
+    , (ok (simpleprolog [(truth ==> r c b)] (truth && r c b)))
+
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && r y z) ==> q x z),
+      (truth ==> r a c), (truth ==> r c b)]
+      (ex x \ ex y \ q x y)))
+    , (ok (simpleprolog [(truth ==> r a c), (truth ==> r c b), 
+      (all x \ all y \ all z \ (r x y && r y z) ==> q x z)] 
+      (ex x \ ex y \ q x y)))
+    , (ok (simpleprolog [(all x \ truth ==> r a x), (truth ==> r c b)] 
+      (r a c)))
+    , (ok (simpleprolog [(all x \ truth ==> r a x), (truth ==> r c b)] 
+      (ex x \ r x c)))
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && r y z) ==> q x z),
+      (truth ==> r a c), (truth ==> r c b)] 
+      (q a b))) 
+
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && q y z) ==> h x y z), (truth ==> r a b),
+      (truth ==> q b c)] (ex x \ ex y \ h x b y)))
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && q y z) ==> h x y z), (truth ==> r a b), 
+      (truth ==> q b c)] (ex x \ ex y \ h x y c)))
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && q y z) ==> h x y z), (truth ==> r a b),
+      (truth ==> q b c)] (ex x \ ex y \ h a x y)))
+    , (ok (simpleprolog [(all x \ all y \ r x y ==> p x), (truth ==> r a b)] (p a)))
+    , (ok (simpleprolog [(all x \ all y \ r x y ==> p x), (all x \ p x ==> pp x), (truth ==> r a b)] (pp a)))   
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z), (truth ==> r a b),
+      (truth ==> q c b), (truth ==> r c a)] (ex x \ ex y \ g x y)))
+    , (ko (simpleprolog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z), (truth ==> r a b),
+      (truth ==> q c b), (truth ==> r c a)] (g b a))) 
+    , (ok (simpleprolog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z), (truth ==> r a b),
+      (truth ==> q c b), (truth ==> r c a)] (g a b)))
+
     , section "Test backchain"
 
-    , (ok (prolog [(all x \ truth ==> padre eustacchio x), (truth ==> padre parisio ildio)] 
-        (padre eustacchio parisio)))
-    , (ok (prolog [(all x \ truth ==> padre eustacchio x), (truth ==> padre parisio ildio)] 
-        (ex x \ padre x parisio)))
-    , (ok (prolog [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
-        (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
-        (nonno eustacchio ildio))) 
-    , (ok (prolog [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
-        (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)]
-        (ex x \ ex y \ nonno x y)))
-    , section "Test start"
+    , (ok (Prog = [(truth ==> r a c), (truth ==> r c b)], 
+      Prog = [C|Cs], backchain Prog C Cs (r a c)))
 
-    , (ok-eq (padre eustacchio parisio) (start [(all x \ truth ==> padre eustacchio x), 
-      (truth ==> padre parisio ildio)] (expr x \ padre x parisio))) 
-    ,(ok-eq (padre eustacchio parisio) (start [(all x \ truth ==> padre eustacchio x), 
-      (truth ==> padre parisio ildio)] (expr x \ padre eustacchio x))) 
-    , (ok-eq (nonno eustacchio ildio) (start [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
-      (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
-      (expr x \ nonno eustacchio x)))
-    , (ok-eq (nonno eustacchio ildio) (start [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
-      (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
-      (expr x \ nonno x ildio)))
-      % == Il prossimo test non va == Ci sono due quantificatori == %
-    , (ok-eq (nonno eustacchio ildio) (start [(all x \ all y \ all z \ (padre x y && padre y z) ==> nonno x z),
-      (truth ==> padre eustacchio parisio), (truth ==> padre parisio ildio)] 
-      (expr x \ expr y \ nonno x y)))
-    , (ok )
+    , section "Test topprolog"
+
+    , (ok-eq (r a c) (topprolog [(truth ==> r c b),
+      (truth ==> r a c)] (r a c)))
+    , (ok-eq (r a c) (topprolog [(all x \ truth ==> r a x), 
+      (truth ==> r c b)] (expr x \ r x c))) 
+    , (ok-eq (r a c) (topprolog [(all x \ truth ==> r a x), 
+      (truth ==> r c b)] (expr x \ r a x))) 
+    , (ok-eq (q a b) (topprolog [(all x \ all y \ all z \ (r x y && r y z) ==> q x z),
+      (truth ==> r a c), (truth ==> r c b)] 
+      (expr x \ q a x)))
+    , (ok-eq (q a b) (topprolog [(all x \ all y \ all z \ (r x y && r y z) ==> q x z),
+      (truth ==> r a c), (truth ==> r c b)] 
+      (expr x \ q x b)))
+    , (ok-eq (q a b) (topprolog [(all x \ all y \ all z \ (r x y && r y z) ==> q x z),
+      (truth ==> r a c), (truth ==> r c b)] 
+      (expr x \ expr y \ q x y)))
+    , (ok-eq (r a b) (topprolog [(truth ==> r a b)] 
+      (expr x \ expr y \ r x y)))
+    , (ok-eq (g a b) (topprolog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z), (truth ==> r a b),
+      (truth ==> q c b), (truth ==> r c a)] (g a b)))
+    , (ok-eq (p a) (topprolog [(all x \ all y \ r x y ==> p x), (truth ==> r a b)] (p a)))    
+    , (ok-eq (pp a) (topprolog [(all x \ all y \ r x y ==> p x), (all x \ p x ==> pp x), (truth ==> r a b)] 
+      (pp a)))  
+    , (ok-eq (pp a) (topprolog [(all x \ all y \ r x y ==> p x), (all x \ p x ==> pp x), (truth ==> r a b)] 
+      (expr x \ pp x)))      
+
+    , section "Test prolog"
+
+    , (ok-eq (g a b) (prolog [(all x \ all y \ all z \ (r x y && q x z) ==> g y z), (r a b),
+      (q c b), (r c a)] (g a b))) 
+    , (ok-eq (r a c) (prolog [(r c b),
+      (r a c)] (r a c)))
+    , (ok-eq (r a c) (prolog [(all x \ r a x), (r c b)] (expr x \ r x c))) 
+    , (ok-eq (r a c) (prolog [(all x \ r a x), (r c b)] (expr x \ r a x))) 
+    , (ok-eq (q a b) (prolog [(all x \ all y \ all z \ (r x y && r y z) ==> q x z),
+      (r a c), (r c b)] (expr x \ q a x)))
+
+    % === Harrison's Tests leq === %
+
+    , (ok (simpleprolog [(all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+      (leq (s (s zo)) (s (s (s zo))))))
+
+    , (ok-eq (leq (s (s zo)) (s (s (s zo)))) 
+      (prolog [(all x \ leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+      (leq (s (s zo)) (s (s (s zo))))))
+
+    , (ko (simpleprolog [(all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+        (leq (s (s zo)) (s zo))))          
+    , (ko (prolog [(all x \ leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+              (leq (s (s zo)) (s zo)) (leq (s (s zo)) (s zo))))
+    , (ok (simpleprolog [(all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+              (ex x \ leq (s (s zo)) x)))         
+    , (ok-eq (leq (s (s zo)) (s (s zo))) (prolog [(all x \ leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))]
+              (expr x \ leq (s (s zo)) x)))
+
+    % === Harrison's Tests append === %
+
+    , (ok (simpleprolog [(all x \ truth ==> append/t nil/t x x), (all t \ all h \ all l \ all a \ 
+              append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] (append/t nil/t (cons/t (s zo) nil/t) (cons/t (s zo) nil/t))))
+    , (ok (simpleprolog [(all x \ truth ==> append/t nil/t x x), (all t \ all h \ all l \ all a \ 
+              append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] (append/t (cons/t (s zo) nil/t) (cons/t (s (s zo)) nil/t ) (cons/t (s zo) (cons/t (s (s zo)) nil/t)))))
+    , (ok (simpleprolog [(all x \ truth ==> append/t nil/t x x), (all t \ all h \ all l \ all a \ 
+              append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] (ex x \ append/t (cons/t zo nil/t) (cons/t (s zo) nil/t) x)))
+    
+    , (ok (simpleprolog [(all x \ truth ==> append/t nil/t x x), (all t \ all h \ all l \ all a \ 
+              append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] (ex x \ append/t (cons/t zo nil/t) x (cons/t zo (cons/t (s zo) nil/t)))))
+
+    , (ok-eq (append/t (cons/t (s zo) nil/t) (cons/t (s (s zo)) nil/t) (cons/t (s zo) (cons/t (s (s zo)) nil/t))) 
+      (prolog [(all x \ append/t (nil/t) x x), (all t \ all h \ all l \ all a \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] 
+      (append/t (cons/t (s zo) nil/t) (cons/t (s (s zo)) nil/t) (cons/t (s zo) (cons/t (s (s zo)) nil/t)))))
+   
+    , (ok-eq (append/t (nil/t) (cons/t zo nil/t) (cons/t zo nil/t)) 
+      (prolog [(all x \ append/t nil/t x x), (all t \ all l \ all a \ all h \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] 
+      (expr x \ append/t nil/t (cons/t zo nil/t) x))) 
+   
+    , (ok-eq (append/t (cons/t (s zo) nil/t) (cons/t (s (s zo)) nil/t) (cons/t (s zo) (cons/t (s (s zo)) nil/t) )) 
+      (topprolog [(all x \ truth ==> append/t nil/t x x), (all t \ all l \ all a \ all h \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] 
+      (expr x \ append/t (cons/t (s zo) nil/t) (cons/t (s (s zo)) nil/t) x)))    
+    
+    , (ok (simpleprolog [(all x \ truth ==> append/t nil/t x x), (all t \ all h \ all l \ all a \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))] 
+              (append/t (cons/t (s zo) (cons/t (s (s zo)) nil/t)) 
+              (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)) 
+              (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t))))))) % = [1,2,3,4]
+    
+   , (ok-eq (append/t (cons/t (s zo) (cons/t (s (s zo)) nil/t)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t))
+      (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)))))
+      (prolog [(all x \ append/t nil/t x x), (all t \ all h \ all l \ all a \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))]
+      (expr y \ append/t (cons/t (s zo) (cons/t (s (s zo)) nil/t)) y 
+      (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)))))))
+   
+   ,  (ok-eq (append/t (cons/t (s zo) (cons/t (s (s zo)) nil/t)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t))
+      (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)))))
+      (prolog [(all x \ append/t nil/t x x), (all t \ all h \ all l \ all a \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))]
+      (expr x \ append/t x (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t))  
+      (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)))))))
+
+    , (ok-eq (append/t nil/t (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t))))
+      (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)))))
+      (prolog [(all x \ append/t nil/t x x), (all t \ all h \ all l \ all a \ append/t t l a ==> append/t (cons/t h t) l (cons/t h a))]
+      (expr x \expr y \ append/t x y (cons/t (s zo) (cons/t (s (s zo)) (cons/t (s (s (s zo))) (cons/t (s (s (s (s zo)))) nil/t)))))))
+ 
     ]).
 
+% == Sort rule == % 
+
+% type ssort, pperm list term -> list term -> formula.
+% type delete int -> list term -> list term -> formula.
+% type ssorted list term -> formula.
+
+% main :- SORTRULES = [
+%     (all x \ all y \ pperm x y && ssorted y ==> ssort x y)
+%   , (truth ==> ssorted nil/t)
+%   , (all x \ truth ==> ssorted [x])
+%   , (all x \ all y \ all z \ ((leq x y) && ssorted [y|z]) ==> ssorted [x|[y|z]])
+%   , (truth ==> pperm nil/t nil/t)
+%   , (all z \ all v \ all y \ all u \ all x \ ((delete u [x|y] z) && pperm z v) ==> (pperm [x|y] [u|v]))
+%   , (all x \ all y \ truth ==> delete x [x|y] y)
+%   , (all x \ all y \ all z \ all w \ delete x z w ==> delete x [y|z] [y|w])
+%   , (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))
+% ]
+%   , simpleprolog SORTRULES (ssort [] X), print X.
 
 
+% main :- simpleprolog [
+%     (all x \ all y \ pperm x y && ssorted y ==> ssort x y)
+%   , (truth ==> ssorted nil/t)
+%   , (all x \ truth ==> ssorted [x])
+%   , (all x \ all y \ all z \ ((leq x y) && ssorted [y|z]) ==> ssorted [x|[y|z]])
+%   , (truth ==> pperm nil/t nil/t)
+%   , (all z \ all v \ all y \ all u \ all x \ ((delete u [x|y] z) && pperm z v) ==> (pperm [x|y] [u|v]))
+%   , (all x \ all y \ truth ==> delete x [x|y] y)
+%   , (all x \ all y \ all z \ all w \ delete x z w ==> delete x [y|z] [y|w])
+%   , (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+
+%     (ssort [(s (s (s (s zo)))), (s zo), zo, (s (s zo))] X), print X.

@@ -6,32 +6,61 @@ accumulate skolem.
 accumulate verbosity.
 accumulate test.
 
+% Existential quantifier for topprolog %
 type expr (term -> formula) -> formula.
 
-% ==== PROLOG ==== %
+%%% ---------------------------------------------------------------------------
+%%% Predicate to generate horn clauses in program and in query
+%%% ---------------------------------------------------------------------------
 
-pred hornify i: formula, o: formula.
-hornify truth truth :- !.
-hornify X (truth ==> X) :- !.
-% hornify (P !! S) (Q ==> S) :- nnf P P2, dcopy/fm P2 Q.
-% hornify (neg P) (Q ==> falsity) :- dcopy/fm P Q.
+pred query i: formula.
+query X :- atomic X, !.
+query (X1 && X2) :- query X1, query X2.
+query (X1 !! X2) :- query X1, query X2.
+query (ex X) :- pi x \ query (X x).
+% clausola aggiunta %
+query (expr X) :- sigma x \ query (X x).
 
-pred prolog i: list formula, o: formula.
-pred start i: list formula, o: formula, o: formula.
-% prolog Prog Q.
+pred hornrule i: formula, o: formula.
+hornrule X (truth ==> X) :- atomic X, !.
+hornrule (X ==> Y) (X ==> Y) :- atomic Y, query X.
+hornrule (all X) (all Y) :- pi x \ hornrule (X x) (Y x).
 
-start Prog (expr Q) (Q X) :- !, start Prog (Q X) (Q X).
-start Prog Q Q :- prolog Prog Q.
+pred hornprog i: list formula, o: list formula.
+hornprog Prog Prog1 :- std.map Prog hornrule Prog1.
 
-prolog _Prog truth.
-prolog Prog (Q1 && Q2) :- prolog Prog  Q1, prolog Prog Q2. 
-prolog Prog (Q1 !! Q2) :- prolog Prog  Q1; prolog Prog Q2. 
-prolog Prog (ex Q) :- sigma x \ prolog Prog (Q x).
-prolog [C|Cs] Q :- backchain [C|Cs] C Cs Q.
+%%% ---------------------------------------------------------------------------
+%%% Predicate to topprolog simpleprolog 
+%%% ---------------------------------------------------------------------------
+
+% pred topprolog i: list formula, o: formula, o: formula.
+% topprolog Prog (expr Q) Q1 :- !, sigma x \ topprolog Prog (Q _X) Q1.
+% topprolog Prog Q Q :- simpleprolog Prog Q.
+
+pred topprolog i: list formula, o: formula, o: formula.
+topprolog Prog (expr Q) Q1 :- !, sigma x \ topprolog Prog (Q x) Q1.
+topprolog Prog Q Q :- simpleprolog Prog Q.
+
+pred prolog i: list formula, o: formula, o: formula.
+prolog Prog Q Q1 :- hornprog Prog Prog1, query Q, topprolog Prog1 Q Q1. 
+ 
+
+%%% ---------------------------------------------------------------------------
+%%% Main simpleprolog predicate
+%%% ---------------------------------------------------------------------------
+
+pred simpleprolog i: list formula, o: formula.
+simpleprolog _Prog truth.
+simpleprolog Prog (Q1 && Q2) :- simpleprolog Prog  Q1, simpleprolog Prog Q2. 
+simpleprolog Prog (Q1 !! Q2) :- simpleprolog Prog  Q1; simpleprolog Prog Q2. 
+simpleprolog Prog (ex Q) :- sigma x \ simpleprolog Prog (Q x).
+simpleprolog [C|Cs] Q :- backchain [C|Cs] C Cs Q.
+
+%%% ---------------------------------------------------------------------------
+%%% Predicate for backchain
+%%% ---------------------------------------------------------------------------
 
 pred backchain i: list formula, i: formula, i: list formula, o: formula.
-% backchain Prog C Cs Q.
-
-backchain Prog (Qs ==> Q) _Cs Q :- prolog Prog Qs.
+backchain Prog (Qs ==> Q) _Cs Q :- simpleprolog Prog Qs.
 backchain Prog (all C) Cs Q :- sigma x \ backchain Prog (C x) Cs Q.
 backchain Prog _C [C|Cs] Q :- backchain Prog C Cs Q.

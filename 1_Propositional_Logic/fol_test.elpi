@@ -34,6 +34,17 @@ type x, y term.
 type f term -> term.
 type r, t term -> formula.
 
+type p, q, r formula.
+
+copy/fm p p :- !.
+copy/fm q q :- !.
+copy/fm r r :- !.
+
+dcopy/fm p p :- !.
+dcopy/fm q q :- !.
+dcopy/fm r r :- !.
+
+
 %%% ---------------------------------------------------------------------------
 %%% Interpretation.
 %%% ---------------------------------------------------------------------------
@@ -99,3 +110,9 @@ main :-
     , ok-eq (ex X \ ex Y \ neg (r X) && neg (r Y) !! neg (r X))
             (pnf ((ex X \ neg (all Y \ r X !! r Y)) !! neg (all X \ r X)))
      ]).
+
+
+
+% main :- negate (neg p) X ,  print X.
+
+main :- cnf1 (p !! p) X, print X.

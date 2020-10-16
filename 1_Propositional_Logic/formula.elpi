@@ -116,3 +116,10 @@ simplify1 (falsity <=> P) P1 :- simplify1 (neg P) P1, !.
 
 pred simplify i:formula, o:formula.
 simplify P P1 :- (pi X X1 \ copy1/fm X X1 :- simplify1 X X1) => dcopy/fm P P1.
+
+
+
+
+
+
+
