@@ -76,43 +76,37 @@ eval (t X) B :- eval_t {termval X} B.
 shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
-main :-
-    with-verbosity quiet (run-tests
-    [ section "holds"
-    , okb (holds (r x))
-    , kob (holds (r y))
-    , kob (holds (t x))
-    , okb (holds (t x !! r x))
-    , kob (holds (t x && r x))
-    , okb (holds (r y !! r x))
-    , kob (holds (r y && r x))
-    , kob (holds (all a\ r (f a)))
-    , okb (holds (ex  a\ r (f a)))
-    , okb (holds/c (ctx a\ formula/c (r a !! r x)))
-    , kob (holds/c (ctx a\ formula/c (r a && r x)))
-    , section "simplify"
-    , ok-eq (all X \ r X) (simplify (all X \ ex U \ r X))   
-    , ok-eq (all X \ r X && t y) (simplify (all X \ ex U \ r X && ex Y \ t y)) 
-    , section "nnf"
-    , ok-eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
-    , ok-eq (neg (r x) !! neg (r y)) (nnf (neg (r x && r y)))
-    , ok-eq ((ex X \ neg (r X)) !! r y)
-            (nnf (neg ((all X \ r X) && ex X \ neg (r y))))
-    , section "prenex"
-    , ok-eq (ex X \ neg (r X)) (prenex (ex X \ neg (r X)))
-    , ok-eq (all X \ all Y \ r X && r Y) (prenex (all X \ r X && (all Y \ r Y)))
-    , section "pnf"
-    , ok-eq (ex X \ neg (r X) !! r x) (pnf (neg (all X \ r X) !! r x))
-    , ok-eq (ex X \ neg (r X) !! r x && r x)
-            (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x))) 
-    , ok-eq (ex X \ neg (r X) !! r x && t x)
-            (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
-    , ok-eq (ex X \ ex Y \ neg (r X) && neg (r Y) !! neg (r X))
-            (pnf ((ex X \ neg (all Y \ r X !! r Y)) !! neg (all X \ r X)))
-     ]).
-
-
-
-% main :- negate (neg p) X ,  print X.
-
-main :- cnf1 (p !! p) X, print X.
+% main :-
+%     with-verbosity quiet (run-tests
+%     [ section "holds"
+%     , okb (holds (r x))
+%     , kob (holds (r y))
+%     , kob (holds (t x))
+%     , okb (holds (t x !! r x))
+%     , kob (holds (t x && r x))
+%     , okb (holds (r y !! r x))
+%     , kob (holds (r y && r x))
+%     , kob (holds (all a\ r (f a)))
+%     , okb (holds (ex  a\ r (f a)))
+%     , okb (holds/c (ctx a\ formula/c (r a !! r x)))
+%     , kob (holds/c (ctx a\ formula/c (r a && r x)))
+%     , section "simplify"
+%     , ok-eq (all X \ r X) (simplify (all X \ ex U \ r X))   
+%     , ok-eq (all X \ r X && t y) (simplify (all X \ ex U \ r X && ex Y \ t y)) 
+%     , section "nnf"
+%     , ok-eq (ex X \ neg (r X)) (nnf (neg (all X \ r X)))
+%     , ok-eq (neg (r x) !! neg (r y)) (nnf (neg (r x && r y)))
+%     , ok-eq ((ex X \ neg (r X)) !! r y)
+%             (nnf (neg ((all X \ r X) && ex X \ neg (r y))))
+%     , section "prenex"
+%     , ok-eq (ex X \ neg (r X)) (prenex (ex X \ neg (r X)))
+%     , ok-eq (all X \ all Y \ r X && r Y) (prenex (all X \ r X && (all Y \ r Y)))
+%     , section "pnf"
+%     , ok-eq (ex X \ neg (r X) !! r x) (pnf (neg (all X \ r X) !! r x))
+%     , ok-eq (ex X \ neg (r X) !! r x && r x)
+%             (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ r x))) 
+%     , ok-eq (ex X \ neg (r X) !! r x && t x)
+%             (pnf (ex A \ neg (all X \ r X) !! r x && (ex Y \ t x)))
+%     , ok-eq (ex X \ ex Y \ neg (r X) && neg (r Y) !! neg (r X))
+%             (pnf ((ex X \ neg (all Y \ r X !! r Y)) !! neg (all X \ r X)))
+%      ]).

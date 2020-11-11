@@ -26,40 +26,47 @@ dcopy/fm r r :- !.
 shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
-main :-
-    with-verbosity quiet (run-tests
-    [ section "Test copy/fm"
-    , (ok-eq (q && r !! r) R \
-         [ (copy/fm p q :- !)
-         , (copy/fm q r :- !)
-         , (pi X\ copy/fm X X :- atomic X)
-         ] => copy/fm (p && q !! r) R)
-    , section "Test onatoms"
-    , (ok-eq (r && q !! p) R \
-         pi F\
-         [ (F p r :- !)
-         , (F r p :- !)
-         , (pi X\ F X X)
-         ] => onatoms F (p && q !! r) R)
-    , section "Test atoms"
-    , ok-eq [p, q, r] (atoms (p && q !! r))
-    , section "Test simplify"
-    , ok-eq falsity (simplify (neg truth))
-    , ok-eq p (simplify (p && truth))
-    , ok-eq falsity (simplify (falsity && p))
-    , ok-eq p (simplify (neg (neg p)))
-    , ok-eq truth (simplify (p !! truth))
-    , ok-eq p (simplify (falsity !! p))
-    , ok-eq truth (simplify (falsity ==> p))
-    , ok-eq (neg p) (simplify (p ==> falsity))
-    , ok-eq p (simplify (truth ==> p))
-    , ok-eq truth (simplify (p ==> truth))
-    , ok-eq p (simplify (p <=> truth))
-    , ok-eq (neg p) (simplify (falsity <=> p))
-    , ok-eq truth (simplify (falsity <=> falsity))
-    , ok-eq truth (simplify (falsity <=> (falsity <=> (falsity <=> falsity))))
-    , ok-eq truth (simplify (falsity ==> (falsity ==> falsity)))
-    , ok-eq falsity (simplify (truth ==> falsity))
-    , ok-eq ((neg p) && q) (simplify (truth && ((((p ==> falsity) && (truth ==> q)) !! falsity))))
-    , ok-eq ((neg p) ==> (neg q)) (simplify ((truth ==> (p <=> falsity)) ==> neg (q !! (falsity && r))))
-    ]).
+% main :-
+%     with-verbosity quiet (run-tests
+%     [ section "Test copy/fm"
+%     , (ok-eq (q && r !! r) R \
+%          [ (copy/fm p q :- !)
+%          , (copy/fm q r :- !)
+%          , (pi X\ copy/fm X X :- atomic X)
+%          ] => copy/fm (p && q !! r) R)
+%     , section "Test onatoms"
+%     , (ok-eq (r && q !! p) R \
+%          pi F\
+%          [ (F p r :- !)
+%          , (F r p :- !)
+%          , (pi X\ F X X)
+%          ] => onatoms F (p && q !! r) R)
+%     , section "Test atoms"
+%     , ok-eq [p, q, r] (atoms (p && q !! r))
+%     , section "Test simplify"
+%     , ok-eq falsity (simplify (neg truth))
+%     , ok-eq p (simplify (p && truth))
+%     , ok-eq falsity (simplify (falsity && p))
+%     , ok-eq p (simplify (neg (neg p)))
+%     , ok-eq truth (simplify (p !! truth))
+%     , ok-eq p (simplify (falsity !! p))
+%     , ok-eq truth (simplify (falsity ==> p))
+%     , ok-eq (neg p) (simplify (p ==> falsity))
+%     , ok-eq p (simplify (truth ==> p))
+%     , ok-eq truth (simplify (p ==> truth))
+%     , ok-eq p (simplify (p <=> truth))
+%     , ok-eq (neg p) (simplify (falsity <=> p))
+%     , ok-eq truth (simplify (falsity <=> falsity))
+%     , ok-eq truth (simplify (falsity <=> (falsity <=> (falsity <=> falsity))))
+%     , ok-eq truth (simplify (falsity ==> (falsity ==> falsity)))
+%     , ok-eq falsity (simplify (truth ==> falsity))
+%     , ok-eq ((neg p) && q) (simplify (truth && ((((p ==> falsity) && (truth ==> q)) !! falsity))))
+%     , ok-eq ((neg p) ==> (neg q)) (simplify ((truth ==> (p <=> falsity)) ==> neg (q !! (falsity && r))))
+%     ]).
+
+
+main :- dual ((p !! q) !! (p !! q)) X, print X.
+
+
+% main :- dual (p && (neg p)) X, print X.
+ 

@@ -117,9 +117,35 @@ simplify1 (falsity <=> P) P1 :- simplify1 (neg P) P1, !.
 pred simplify i:formula, o:formula.
 simplify P P1 :- (pi X X1 \ copy1/fm X X1 :- simplify1 X X1) => dcopy/fm P P1.
 
+%%% ---------------------------------------------------------------------------
+%%% De Morgan
+%%% ---------------------------------------------------------------------------
 
+pred demorgancon1 i:formula, o: formula.
+demorgancon1 (P && Q) (neg (neg P !! neg Q)).
 
+pred demorgancon i: formula, o: formula.
+demorgancon P P2 :- (pi X X1 \ copy1/fm X X1 :- demorgancon1 X X1) => dcopy/fm P P1, simplify P1 P2.
 
+pred demorgandis1 i:formula, o: formula.
+demorgandis1 (P !! Q) (neg (P1 && Q1)) :- copy/fm (neg P) P1, copy/fm (neg Q) Q1.
 
+pred demorgandis i:formula, o:formula.
+demorgandis P P2 :- (pi X X1 \ copy1/fm X X1 :- demorgandis1 X X1) => dcopy/fm P P1, simplify P1 P2.
 
+%%% ---------------------------------------------------------------------------
+%%% Duality
+%%% ---------------------------------------------------------------------------
 
+pred dual1 i: formula, o: formula.
+dual1 falsity truth :- !.
+dual1 truth falsity :- !.
+dual1 (P && Q) (P !! Q) :- !.
+dual1 (P !! Q) (P && Q) :- !.
+dual1 P P :- atomic P.
+
+pred dual i: formula, o: formula.
+dual P P1 :- (pi X X1 \ copy1/fm X X1 :- (dual1 X X1, ! ; X = X1)) => dcopy/fm P P1.
+
+pred dual2 i: formula, o: formula.
+dual2 P P1 :- (pi X X1 \ copy/fm X X1 :- dual1 X X1, !) => copy/fm P P1.
