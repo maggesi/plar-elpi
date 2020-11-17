@@ -67,7 +67,6 @@ fold (P <=> Q) A A1 :- !, fold Q A B, fold P B A1.
 %%% Clauses for this predicate will be added locally when needed.
 %%% ---------------------------------------------------------------------------
 
-%%%atomic%%%
 pred atomic i:formula.
 
 %%% ---------------------------------------------------------------------------
