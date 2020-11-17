@@ -5,6 +5,11 @@
 %%% 
 %%%    ToDo:
 %%%      - Parser and support for concrete syntax?
+<<<<<<< HEAD
+%%%      - Use of arithmetic operators +, * : is it possible?    
+%%%      - Priority of "+", "*" ?
+=======
+>>>>>>> 4007596cfe1ca35e1e03c50c8c27121ff4107039
 %%%      - More tests?
 %%%      - Is varb needed?  Use lProlog variables?                                                       
 %%% ===========================================================================
@@ -46,9 +51,15 @@ copy (X * Y) (X1 * Y1) :- copy X X1, copy Y Y1.
 
 pred copy1 i:expression, o:expression.
 copy1 X X.
+<<<<<<< HEAD
+% % copy1 (const N) (const N).
+% % copy1 (X + Y) (X + Y).
+% % copy1 (X * Y) (X * Y).
+=======
 % copy1 (const N) (const N).
 % copy1 (X + Y) (X + Y).
 % copy1 (X * Y) (X * Y).
+>>>>>>> 4007596cfe1ca35e1e03c50c8c27121ff4107039
 
 pred deepcopy i:expression, o:expression.
 deepcopy (const N) (const N).
@@ -59,6 +70,23 @@ deepcopy (X * Y) Z :- copy1 ({deepcopy X} * {deepcopy Y}) Z.
 %%% Compositional simplification.
 %%% ---------------------------------------------------------------------------
 
+<<<<<<< HEAD
+ pred copy_comp i:expression, o:expression.
+ copy_comp (const M + const N) (const P) :- P is M + N, !.
+ copy_comp (const M * const N) (const P) :- P is M * N, !.
+
+ pred copy_+_zero i:expression, o:expression.
+ copy_+_zero (const 0 + X) X :- !.
+ copy_+_zero (X + const 0) X :- !.
+
+ pred copy_*_one i:expression, o:expression.
+ copy_*_one (const 1 * X) X :- !.
+ copy_*_one (X * const 1) X :- !.
+
+ pred copy_*_zero i:expression, o:expression.
+ copy_*_zero (const 0 * _X) (const 0) :- !.
+ copy_*_zero (_X * const 0) (const 0) :- !.
+=======
 pred copy_comp i:expression, o:expression.
 copy_comp (const M + const N) (const P) :- P is M + N, !.
 copy_comp (const M * const N) (const P) :- P is M * N, !.
@@ -74,32 +102,66 @@ copy_mul_one (X * const 1) X :- !.
 pred copy_mul_zero i:expression, o:expression.
 copy_mul_zero (const 0 * _X) (const 0) :- !.
 copy_mul_zero (_X * const 0) (const 0) :- !.
+>>>>>>> 4007596cfe1ca35e1e03c50c8c27121ff4107039
 
-pred simpl0 i:expression, o:expression.
-simpl0 X X1 :-
-    (pi X X1 \ copy X X1 :- copy_mul_zero X X1, !)
-    => copy X X1.
+ pred simpl0 i:expression, o:expression.
+ simpl0 X X1 :-
+     (pi X X1 \ copy X X1 :- copy_*_zero X X1, !)
+     => copy X X1.
 
-pred deepsimpl0 i:expression, o:expression.
-deepsimpl0 X X1 :-
-    (pi X X1 \ copy1 X X1 :- copy_mul_zero X X1, !)
-    => deepcopy X X1.
+ pred deepsimpl0 i:expression, o:expression.
+ deepsimpl0 X X1 :-
+     (pi X X1 \ copy1 X X1 :- copy_*_zero X X1, !)
+     => deepcopy X X1.
 
-pred compute i:expression, o:expression.
-compute X X1 :-
-    (pi X X1 \ copy1 X X1 :- copy_comp X X1, !)
-    => deepcopy X X1.
+ pred compute i:expression, o:expression.
+ compute X X1 :-
+     (pi X X1 \ copy1 X X1 :- copy_comp X X1, !)
+     => deepcopy X X1.
 
-pred topcompute i:expression, o:expression.
-topcompute X X1 :-
-    (pi X X1 \ copy X X1 :- copy_comp X X1, !)
-    => copy X X1.
+ pred topcompute i:expression, o:expression.
+ topcompute X X1 :-
+     (pi X X1 \ copy X X1 :- copy_comp X X1, !)
+     => copy X X1.
 
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
 
+ main :-
+     std.spy(simplify (const 0 + const 1) _E1), !,
+     std.spy(pi X\ simplify
+               ((const 0 * X + const 1) * const 3 + const 12)
+               E2),
+     !, print E2,
+     MINUSONE is 0 - 1,
+     std.spy(simpl0 ((const 1 * (const 0 * const 0))
+                     +
+                     (const 2 * (const MINUSONE + const 1)))
+                   E3),
+     !, print E3,
+     std.spy(deepsimpl0 ((const 1 * (const 0 * const 0))
+                         +
+                         (const 2 * (const MINUSONE + const 1)))
+                   E4),
+     !, print E4,
+     std.spy(compute ((const 1 * (const 0 * const 0))
+                         +
+                         (const 2 * (const MINUSONE + const 1)))
+                   E5),
+     !, print E5,
+     std.spy(topcompute ((const 1 * (const 0 * const 0))
+                         +
+                         (const 2 * (const MINUSONE + const 1)))
+                   E6),
+     !, print E6.
+
+
+
 main :-
+<<<<<<< HEAD
+    std.spy(simplify (const 0 + const 1) _E1).
+=======
     std.spy(simplify (const 0 + const 1) _E1), !,
     std.spy(pi X\ simplify
               ((const 0 * X + const 1) * const 3 + const 12)
@@ -126,3 +188,4 @@ main :-
                         (const 2 * (const MINUSONE + const 1)))
                   E6),
     !, print E6.
+>>>>>>> 4007596cfe1ca35e1e03c50c8c27121ff4107039

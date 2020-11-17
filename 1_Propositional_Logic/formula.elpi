@@ -91,16 +91,86 @@ atoms P L :-
 %%% Simplification.
 %%% ---------------------------------------------------------------------------
 
-% Incomplete!  See psimplify1 in [Harrison].
+% See psimplify1 in [Harrison].
 pred simplify1 i:formula, o:formula.
 simplify1 (neg truth) falsity.
-% ...
+simplify1 (neg falsity) truth.
 simplify1 (neg (neg P)) P :- !.
-% ...
+simplify1 (neg P) (neg P) :- !.
+simplify1 (_P && falsity) falsity :- !. 
+simplify1 (falsity && _P) falsity :- !. 
 simplify1 (P && truth) P :- !.
-
-pred simplify2 i:formula, o:formula.
-simplify2 P P1 :- std.spy (simplify1 P P1).
+simplify1 (truth && P) P :- !.
+simplify1 (P !! falsity) P :- !.
+simplify1 (falsity !! P) P :- !.
+simplify1 (_P !! truth) truth :- !.
+simplify1 (truth !! _P) truth :- !.
+simplify1 (falsity ==> _P) truth :- !.
+simplify1 (_P ==> truth) truth :- !.
+simplify1 (truth ==> P) P :- !.
+simplify1 (P ==> falsity) (neg P) :- !.
+simplify1 (P <=> truth) P :- !.
+simplify1 (truth <=> P) P :- !.
+simplify1 (P <=> falsity) P1 :- simplify1 (neg P) P1, !.
+simplify1 (falsity <=> P) P1 :- simplify1 (neg P) P1, !.
 
 pred simplify i:formula, o:formula.
 simplify P P1 :- (pi X X1 \ copy1/fm X X1 :- simplify1 X X1) => dcopy/fm P P1.
+
+pred simplifyal i:formula, o:formula.
+simplifyal P P1 :- (pi X X1 \ copy/fm X X1 :- simplify1 X X1) => copy/fm P P1.
+
+%%% ---------------------------------------------------------------------------
+%%% Duality
+%%% ---------------------------------------------------------------------------
+
+pred dual1 i: formula, o: formula.
+dual1 falsity truth :- !.
+dual1 truth falsity :- !.
+dual1 (P && Q) (P !! Q) :- !.
+dual1 (P !! Q) (P && Q) :- !.
+dual1 P P :- atomic P.
+
+pred dual i: formula, o: formula. 
+dual P P1 :- (pi X X1 \ copy1/fm X X1 :- (dual1 X X1, ! ; X = X1)) => dcopy/fm P P1.
+
+% Alternative predicate for duality %
+% It does a top-down recursion      %
+
+pred dualal i: formula, o: formula.
+dualal P P1 :- (pi X X1 \ copy/fm X X1 :- dual1 X X1, !) => copy/fm P P1.
+
+%%% ---------------------------------------------------------------------------
+%%% DNF via transformation
+%%% ---------------------------------------------------------------------------
+
+%%%---Distribution predicate---%%%
+
+pred distrib1 i: formula, o: formula.
+distrib1 (P && (Q !! R)) (P && Q !! P && R).
+distrib1 ((P !! Q) && R) (P && R !! Q && R).
+
+pred distrib i: formula, o: formula.
+distrib (P && (Q !! R)) (PQ1 !! PR1) :- 
+        (pi X X1 \ copy1/fm X X1 :- distrib1 X X1) => (dcopy/fm (P && Q) PQ1, dcopy/fm (P && R) PR1).
+
+distrib ((P !! Q) && R) (PR1 !! QR1) :- 
+        (pi X X1 \ copy1/fm X X1 :- distrib1 X X1) => (dcopy/fm (P && R) PR1, dcopy/fm (Q && R) QR1).
+
+%%%---Predicate for dnf---%%%
+pred rawdnf1 i: formula, o:formula.
+rawdnf1 (P && Q) PQ :- distrib (P && Q) PQ. 
+rawdnf1 (P !! Q) (P !! Q).
+
+pred rawdnf i: formula, o: formula.
+rawdnf P Q :- (pi X X1 \ copy1/fm X X1 :- rawdnf1 X X1) => dcopy/fm P Q.
+
+pred simpdnf i: formula, o: formula. 
+simpdnf P Q :- rawdnf P P1, simplify P1 Q.
+
+%%% ---------------------------------------------------------------------------
+%%% CNF via transformation
+%%% ---------------------------------------------------------------------------
+
+pred cnf i: formula, o: formula.
+cnf P Q :- nnf (neg P) P1, simpdnf P1 Q.

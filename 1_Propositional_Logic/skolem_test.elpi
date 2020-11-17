@@ -20,6 +20,17 @@ type r term -> term -> formula.
 type a, b term.
 type f term -> term -> term.
 
+copy/fm u u.
+copy/tm a a.
+copy/tm b b.
+copy/fm (p X) (p X1) :- !, copy/tm X X1.
+copy/fm (r X Y) (r X1 Y1) :- !, copy/tm X X1, copy/tm Y Y1.
+copy/tm (f X Y) (f X1 Y1) :- !, copy/tm X X1, copy/tm Y Y1.
+
+dcopy/fm u u.
+dcopy/fm (p X) (p X1) :- !, copy/tm X X1.
+dcopy/fm (r X Y) (r X1 Y1) :- !, copy/tm X X1, copy/tm Y Y1.
+
 %%% ---------------------------------------------------------------------------
 %%% Run tests.
 %%% ---------------------------------------------------------------------------
@@ -30,9 +41,12 @@ shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 main :-
   with-verbosity quiet (run-tests
   [ section "Skolemization"
+
+  , section "skolem"
   , (ok-eq u (skolem u))
   , (ok-eq (p a) (skolem (p a)))
-  , (ok-eq (p a && u) (skolem (p a && u)))
+  , (ok-eq (p a && u) (askolemize (p a && u)))
+  , (ok-eq ((neg u) !! (neg u)) (askolemize ((neg u )!! (neg u))))
   , (ok-eq (all x \ p x) (skolem (all x \ p x)))
   , (ok-eq (all x \ u !! p x) (skolem (all x \ u !! p x)))
   , (ok-eq (fc  f \ p (f[])) (skolem (ex  x \ p x)))
@@ -48,4 +62,51 @@ main :-
            (skolem (all y \ ex z \ ex w \ p y && r z w ))
   , (ok-eq (fc f \ fc g \ all y \ all x \ r x y && r (f[y]) (g[y,x])))
            (skolem (all y \ ex z \ all x \ ex w \ r x y && r z w ))
+
+  , section "askolemize"
+  , (ok-eq u (askolemize u))
+  , (ok-eq (p a) (askolemize (p a)))
+  , (ok-eq (p a && u) (askolemize (p a && u)))
+  , (ok-eq ((neg u) !! (neg u)) (askolemize ((neg u )!! (neg u))))
+  , (ok-eq (all x \ p x) (askolemize (all x \ p x)))
+  , (ok-eq (all x \ u !! p x) (askolemize (all x \ u !! p x)))
+  , (ok-eq (fc  f \ p (f[])) (askolemize (ex  x \ p x)))
+  , (ok-eq (fc  f \ u && p (f[])) (askolemize (ex  x \ u && p x)))
+  , (ok-eq (u !! all x \ p x) (askolemize (u !! all x \ p x)))
+  , (ok-eq (fc f \ u && p (f[])) (askolemize (u && ex x \ p x)))
+  , (ok-eq (fc f \ all x \ r x (f[x])) (askolemize (all x \ ex y \ r x y)))
+  , (ok-eq (fc f \ all x \ all z \ p z !! r x (f[x]))
+           (askolemize (all x \ ex y \ all z \ p z !! r x y)))
+  , (ok-eq (fc f \ all x \ all z \ p z && r x (f[x,z]))
+           (askolemize (all x \ all z \ ex y \ p z && r x y)))
+  , (ok-eq (fc f \ fc g \ all y \ p y && r (f[y]) (g[y])))
+           (askolemize (all y \ ex z \ ex w \ p y && r z w ))
+  , (ok-eq (fc f \ fc g \ all y \ all x \ r x y && r (f[y]) (g[y,x])))
+            (askolemize (all y \ ex z \ all x \ ex w \ r x y && r z w ))
+  , (ok-eq ((neg u) !! p a) (askolemize (u ==> p a)))          
+  , (ok-eq (fc f \ all x \ neg (p x) !! r x (f [x])) (askolemize (all x\ p x ==> (ex y \ r x y))))
+  , (ok-eq (fc f \ all x \ r x (f[x]))(askolemize (all x \ ex y \ truth ==> r x y)))
+  , (ok-eq (truth) (askolemize (all x \ ex y \ falsity ==> r x y)))
+  , section "skolemize"
+  , (ok-eq u (skolemize u))
+  , (ok-eq (p a) (skolemize (p a)))
+  , (ok-eq (p a && u) (skolemize (p a && u)))
+  , (ok-eq ((neg u) !! (neg u)) (skolemize ((neg u )!! (neg u))))
+  , (ok-eq (all x \ p x) (skolemize (all x \ p x)))
+  , (ok-eq (all x \ u !! p x) (skolemize (all x \ u !! p x)))
+  , (ok-eq (fc  f \ p (f[])) (skolemize (ex  x \ p x)))
+  , (ok-eq (fc  f \ u && p (f[])) (skolemize (ex  x \ u && p x)))
+  , (ok-eq (all x \ u !!  p x) (skolemize (u !! all x \ p x)))
+  , (ok-eq (fc f \ u && p (f[])) (skolemize (u && ex x \ p x)))
+  , (ok-eq (fc f \ all x \ r x (f[x])) (skolemize (all x \ ex y \ r x y)))
+  , (ok-eq (fc f \ all x \ all z \ p z !! r x (f[x]))
+           (skolemize (all x \ ex y \ all z \ p z !! r x y)))
+  , (ok-eq (fc f \ all x \ all z \ p z && r x (f[x,z]))
+           (skolemize (all x \ all z \ ex y \ p z && r x y)))
+  , (ok-eq (fc f \ fc g \ all y \ p y && r (f[y]) (g[y])))
+           (skolemize (all y \ ex z \ ex w \ p y && r z w ))
+  , (ok-eq (fc f \ fc g \ all y \ all x \ r x y && r (f[y]) (g[y,x])))
+            (skolemize (all y \ ex z \ all x \ ex w \ r x y && r z w ))
+  , (ok-eq (fc f \all x \ u && (p x && p (f[x]))) (skolemize (u && (all x \ p x && ex y \ p y))))
+  , (ok-eq (fc f \ p (f [a])) (fcpnf (fc f \ p (f [a]))))
   ]).
