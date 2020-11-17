@@ -6,6 +6,9 @@ accumulate lib.
 accumulate formula.
 accumulate verbosity.
 accumulate test.
+accumulate prop.
+accumulate fol.
+
 
 type p, q, r formula.
 
@@ -26,47 +29,61 @@ dcopy/fm r r :- !.
 shorten test.{ run-tests, ok, ko, okb, kob, ok-eq, section }.
 shorten verbosity.{ quiet, terse, info, verbose, debug, with-verbosity }.
 
-% main :-
-%     with-verbosity quiet (run-tests
-%     [ section "Test copy/fm"
-%     , (ok-eq (q && r !! r) R \
-%          [ (copy/fm p q :- !)
-%          , (copy/fm q r :- !)
-%          , (pi X\ copy/fm X X :- atomic X)
-%          ] => copy/fm (p && q !! r) R)
-%     , section "Test onatoms"
-%     , (ok-eq (r && q !! p) R \
-%          pi F\
-%          [ (F p r :- !)
-%          , (F r p :- !)
-%          , (pi X\ F X X)
-%          ] => onatoms F (p && q !! r) R)
-%     , section "Test atoms"
-%     , ok-eq [p, q, r] (atoms (p && q !! r))
-%     , section "Test simplify"
-%     , ok-eq falsity (simplify (neg truth))
-%     , ok-eq p (simplify (p && truth))
-%     , ok-eq falsity (simplify (falsity && p))
-%     , ok-eq p (simplify (neg (neg p)))
-%     , ok-eq truth (simplify (p !! truth))
-%     , ok-eq p (simplify (falsity !! p))
-%     , ok-eq truth (simplify (falsity ==> p))
-%     , ok-eq (neg p) (simplify (p ==> falsity))
-%     , ok-eq p (simplify (truth ==> p))
-%     , ok-eq truth (simplify (p ==> truth))
-%     , ok-eq p (simplify (p <=> truth))
-%     , ok-eq (neg p) (simplify (falsity <=> p))
-%     , ok-eq truth (simplify (falsity <=> falsity))
-%     , ok-eq truth (simplify (falsity <=> (falsity <=> (falsity <=> falsity))))
-%     , ok-eq truth (simplify (falsity ==> (falsity ==> falsity)))
-%     , ok-eq falsity (simplify (truth ==> falsity))
-%     , ok-eq ((neg p) && q) (simplify (truth && ((((p ==> falsity) && (truth ==> q)) !! falsity))))
-%     , ok-eq ((neg p) ==> (neg q)) (simplify ((truth ==> (p <=> falsity)) ==> neg (q !! (falsity && r))))
-%     ]).
+main :-
+    with-verbosity quiet (run-tests
+    [ section "Test copy/fm"
+    , (ok-eq (q && r !! r) R \
+         [ (copy/fm p q :- !)
+         , (copy/fm q r :- !)
+         , (pi X\ copy/fm X X :- atomic X)
+         ] => copy/fm (p && q !! r) R)
+    , section "Test onatoms"
+    , (ok-eq (r && q !! p) R \
+         pi F\
+         [ (F p r :- !)
+         , (F r p :- !)
+         , (pi X\ F X X)
+         ] => onatoms F (p && q !! r) R)
+    , section "Test atoms"
+    , ok-eq [p, q, r] (atoms (p && q !! r))
+    , section "Test simplify"
+    , ok-eq falsity (simplify (neg truth))
+    , ok-eq p (simplify (p && truth))
+    , ok-eq falsity (simplify (falsity && p))
+    , ok-eq p (simplify (neg (neg p)))
+    , ok-eq truth (simplify (p !! truth))
+    , ok-eq p (simplify (falsity !! p))
+    , ok-eq truth (simplify (falsity ==> p))
+    , ok-eq (neg p) (simplify (p ==> falsity))
+    , ok-eq p (simplify (truth ==> p))
+    , ok-eq truth (simplify (p ==> truth))
+    , ok-eq p (simplify (p <=> truth))
+    , ok-eq (neg p) (simplify (falsity <=> p))
+    , ok-eq truth (simplify (falsity <=> falsity))
+    , ok-eq truth (simplify (falsity <=> (falsity <=> (falsity <=> falsity))))
+    , ok-eq truth (simplify (falsity ==> (falsity ==> falsity)))
+    , ok-eq falsity (simplify (truth ==> falsity))
+    , ok-eq ((neg p) && q) (simplify (truth && ((((p ==> falsity) && (truth ==> q)) !! falsity))))
+    , ok-eq ((neg p) ==> (neg q)) (simplify ((truth ==> (p <=> falsity)) ==> neg (q !! (falsity && r))))
+    , section "Test duality"
+    , ok-eq (p !! q) (dual (p && q))
+    , ok-eq (p && q) (dual (p !! q))
+    , ok-eq (p && (p !! q)) (dual (p !! (p && q)))
+    , ok-eq ((p && q) && (p !! r)) (dual ((p !! q) !! (p && r)))
+    , section "Test distrib"
+    , ok-eq (p && q !! p && r) (distrib (p && (q !! r)))
+    , ok-eq (p && r !! q && r) (distrib ((p !! q) && r))
+    , section "Test dnf"
+    , ok-eq ((p && neg p !! (q && r) && neg p) !! p && neg r !! (q && r) && neg r) 
+            (rawdnf ((p !! q && r) && ((neg p) !! (neg r))))
+    , ok (tautology ({simpdnf ((p !! q && r) && ((neg p) !! (neg r)))} 
+          <=> ((p !! q && r) && ((neg p) !! (neg r)))))
+    ]).
 
+% main :- A = ((p !! q && r) && ((neg p) !! (neg r))),
+%         B = p && (neg r) !! q && r && (neg p),
+%         simpdnf A X, truthtable X, truthtable A, tautology (X <=> A).
 
-main :- dual ((p !! q) !! (p !! q)) X, print X.
+% main :- A = ((p !! q && r) && ((neg p) !! (neg r))), 
+%         rawdnf A X, print X, simplify X Y, print Y, rawdnf Y Z, print Z.
 
-
-% main :- dual (p && (neg p)) X, print X.
- 
