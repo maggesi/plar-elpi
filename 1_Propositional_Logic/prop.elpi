@@ -39,6 +39,7 @@ tautology_row tt.
 pred tautology i:formula.
 tautology P :- atoms P Atoms,
                onallvaluations tautology_row P Atoms.
+            %    , print P " is a tautology".
 
 pred unsatisfiable i:formula.
 unsatisfiable P :- tautology (neg P).

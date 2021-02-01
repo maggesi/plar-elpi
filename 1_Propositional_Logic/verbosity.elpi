@@ -16,7 +16,7 @@ verbosity-level verbose 3.
 verbosity-level debug   4.
 
 pred current-verbosity-level o:int.
-current-verbosity-level 1. % Terse.
+current-verbosity-level 2. % Terse.
 
 pred when-verbosity i:verbosity, i:prop.
 when-verbosity V _ :-

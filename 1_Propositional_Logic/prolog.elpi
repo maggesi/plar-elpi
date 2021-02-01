@@ -18,7 +18,6 @@ query X :- atomic X, !.
 query (X1 && X2) :- query X1, query X2.
 query (X1 !! X2) :- query X1, query X2.
 query (ex X) :- pi x \ query (X x).
-% clausola aggiunta %
 query (expr X) :- sigma x \ query (X x).
 
 pred hornrule i: formula, o: formula.
@@ -33,12 +32,8 @@ hornprog Prog Prog1 :- std.map Prog hornrule Prog1.
 %%% Predicate to topprolog simpleprolog 
 %%% ---------------------------------------------------------------------------
 
-% pred topprolog i: list formula, o: formula, o: formula.
-% topprolog Prog (expr Q) Q1 :- !, sigma x \ topprolog Prog (Q _X) Q1.
-% topprolog Prog Q Q :- simpleprolog Prog Q.
-
 pred topprolog i: list formula, o: formula, o: formula.
-topprolog Prog (expr Q) Q1 :- !, sigma x \ topprolog Prog (Q x) Q1.
+topprolog Prog (expr Q) Q1 :- !, sigma x \ topprolog Prog (Q x) Q1, print x.
 topprolog Prog Q Q :- simpleprolog Prog Q.
 
 pred prolog i: list formula, o: formula, o: formula.

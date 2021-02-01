@@ -22,12 +22,12 @@ order it should be read:
 	 	normal form and prenex normal form.
 
 The next two modules are indipendent from each other but are both 
-depent from the ones above.
+dependent from the ones above.
 
 5.1 skolem.elpi: Predicates for skolemization done in a similar 
 		 fashion as Harrison in plar.
 
-5.2 prolog.elpi: Implementation of prolog inside LProlog itself.
+5.2 prolog.elpi: Implementation of Prolog inside LProlog itself.
 
 
 There is also a rudimental test enviroment. Every module has its own 

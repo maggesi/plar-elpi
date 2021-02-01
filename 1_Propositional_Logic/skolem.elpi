@@ -17,7 +17,7 @@ type fc ((list term -> term) -> formula) -> formula.
 % Predicate used internally to store a boolean connective.
 pred binop i:formula, i:formula, o:formula.
 
-% Main predicate.
+% Main predicate. 
 pred skolem i:formula, o:formula.
 skolem (ex P) (fc f \ Q (f [])) :- !, pi x \ skolem (P x) (Q x).
 skolem (all P) Q :- !, pi x \ skolem (P x) (R x), skolem.all R Q.
@@ -28,10 +28,6 @@ skolem P P.
 % Skolemize an universal quantification.
 % The universal formula is passed without the universal quantifier.
 pred skolem.all i:(term -> formula), o:formula.
-% Questa clausola commentata non "propaga" skolem.
-% La successiva (non commentata) dovrebbe essere corretta.
-% skolem.all (x \ fc f \ P x f) (fc Q) :- !,
-%   pi f \ skolem.all (x \ P x (Xs \ f [x|Xs])) (Q f).
 skolem.all (x \ fc f \ P x f) (fc Q) :- !,
   pi f \ skolem.all (x \ P x (Xs \ f [x|Xs])) (P1 f),
          skolem (P1 f) (Q f).
@@ -39,7 +35,7 @@ skolem.all Q (all Q).
 
 % Skolemize a conjunction or disjunction.
 pred skolem.binop i:formula, i:formula, o:formula.
-skolem.binop P Q R :- skolem P P1, skolem Q Q1, skolem.op P1 Q1 R.
+skolem.binop P Q R :- skolem P P1, skolem Q Q1, skolem.op P1 Q1 R.      
 
 % Compose two skolemized formulas using a boolean connective.
 pred skolem.op i:formula, i:formula, o:formula.
@@ -47,7 +43,7 @@ skolem.op (fc P) Q (fc R) :- !, pi x \ skolem.op (P x) Q (R x).
 skolem.op P (fc Q) (fc R) :- !, pi x \ skolem.op P (Q x) (R x).
 skolem.op P Q R :- binop P Q R.
 
-% skolemize e askolemize come vengono fatti da harrison
+% skolemize and askolemize similar to Harrison's
 
 pred askolemize i: formula, o: formula.
 askolemize P Q :- simplify P P1, nnf P1 P2, skolem P2 Q.
@@ -55,15 +51,32 @@ askolemize P Q :- simplify P P1, nnf P1 P2, skolem P2 Q.
 pred skolemize i: formula, o: formula.
 skolemize P Q :- askolemize P P1, fcpnf P1 Q.
 
-% Predicato di copia per le liste di termini
+% Copy predicate for list of terms
 
 pred copy/tms i: list term, o: list term.
 copy/tms [] [].
 copy/tms [X|Xs] [X1|Xs1] :- copy/tm X X1, copy/tms Xs Xs1.
 
-% Un predicato di forma normale prenessa che sa che farsene di fc
+%--New pnf predicate that works with the quantifier fc--%
 
 pred fcpnf i: formula, o: formula.
 fcpnf (fc P) (fc P1) :- !, pi c \ [pi args args1\ copy/tm (c args) (c args1) :- !, copy/tms args args1] 
         => fcpnf (P c) (P1 c). 
 fcpnf P P1 :- pnf P P1.
+
+
+%--Example predicates--%
+
+accumulate lib.
+accumulate formula.
+accumulate prop.
+accumulate fol.
+accumulate skolem.
+accumulate verbosity.
+accumulate test.
+
+type p term -> term -> formula.
+copy/fm (p X Y) (p X1 Y1) :- !, copy/tm X X1, copy/tm Y Y1.
+dcopy/fm (p X Y) (p X1 Y1) :- !, copy/tm X X1, copy/tm Y Y1.
+
+% main :- skolemize (all x \ ex y \ p x y) X, print X.

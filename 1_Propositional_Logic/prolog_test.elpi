@@ -27,6 +27,7 @@ atomic (leq _X _Y).
 atomic (append/t _X _Y _Z).
 
 
+
 type s term -> term.
 type leq term -> term -> formula.
 
@@ -233,33 +234,54 @@ main :-
 
 % == Sort rule == % 
 
-% type ssort, pperm list term -> list term -> formula.
-% type delete int -> list term -> list term -> formula.
-% type ssorted list term -> formula.
+type ssort, pperm term -> term -> formula.
+type delete term -> term -> term -> formula.
+type ssorted term -> formula.
+
+
+atomic (ssort _X _Y).
+atomic (delete _X _Y _Z).
+atomic (ssorted _X).
+atomic (pperm _X _Y).
 
 % main :- SORTRULES = [
-%     (all x \ all y \ pperm x y && ssorted y ==> ssort x y)
-%   , (truth ==> ssorted nil/t)
-%   , (all x \ truth ==> ssorted [x])
-%   , (all x \ all y \ all z \ ((leq x y) && ssorted [y|z]) ==> ssorted [x|[y|z]])
-%   , (truth ==> pperm nil/t nil/t)
-%   , (all z \ all v \ all y \ all u \ all x \ ((delete u [x|y] z) && pperm z v) ==> (pperm [x|y] [u|v]))
-%   , (all x \ all y \ truth ==> delete x [x|y] y)
-%   , (all x \ all y \ all z \ all w \ delete x z w ==> delete x [y|z] [y|w])
-%   , (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))
+%   (all x \ all y \ (pperm x y && ssorted y) ==> ssort x y),
+%   (truth ==> ssorted nil/t),
+%   (all x \ truth ==> ssorted (cons/t x nil/t)),
+%   (all x \ all y \ all z \ ((leq x y) && ssorted (cons/t y z)) ==> ssorted (cons/t x (cons/t y z))),
+%   (truth ==> pperm nil/t nil/t),
+%   (all z \ all v \ all y \ all u \ all x \ ((delete u (cons/t x y) z) && pperm z v) ==> (pperm (cons/t x y) (cons/t u v))),
+%   (all x \ all y \ truth ==> delete x (cons/t x y) y),
+%   (all x \ all y \ all z \ all w \ delete x z w ==> delete x (cons/t y z) (cons/t y w)),
+%   (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))
 % ]
-%   , simpleprolog SORTRULES (ssort [] X), print X.
+%   , simpleprolog SORTRULES (ssort nil/t X), print X.
 
+% main :- SORTRULES = [
+%   (all x \ all y \ (pperm x y && ssorted y) ==> ssort x y),
+%   (truth ==> ssorted nil/t),
+%   (all x \ truth ==> ssorted (cons/t x nil/t)),
+%   (all x \ all y \ all z \ ((leq x y) && ssorted (cons/t y z)) ==> ssorted (cons/t x (cons/t y z))),
+%   (truth ==> pperm nil/t nil/t),
+%   (all z \ all v \ all y \ all u \ all x \ ((delete u (cons/t x y) z) && pperm z v) ==> (pperm (cons/t x y) (cons/t u v))),
+%   (all x \ all y \ truth ==> delete x (cons/t x y) y),
+%   (all x \ all y \ all z \ all w \ delete x z w ==> delete x (cons/t y z) (cons/t y w)),
+%   (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))
+% ],
+% LIST = (cons/t (s zo) (cons/t (s (s (s (s zo)))) (cons/t (s (s zo)) (cons/t (s (s (s zo))) nil/t))))
+%   , simpleprolog SORTRULES (ssort LIST X), print X.
 
-% main :- simpleprolog [
-%     (all x \ all y \ pperm x y && ssorted y ==> ssort x y)
-%   , (truth ==> ssorted nil/t)
-%   , (all x \ truth ==> ssorted [x])
-%   , (all x \ all y \ all z \ ((leq x y) && ssorted [y|z]) ==> ssorted [x|[y|z]])
-%   , (truth ==> pperm nil/t nil/t)
-%   , (all z \ all v \ all y \ all u \ all x \ ((delete u [x|y] z) && pperm z v) ==> (pperm [x|y] [u|v]))
-%   , (all x \ all y \ truth ==> delete x [x|y] y)
-%   , (all x \ all y \ all z \ all w \ delete x z w ==> delete x [y|z] [y|w])
-%   , (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))] 
+% main :- SORTRULES = [
+%   (all x \ all y \ (pperm x y && ssorted y) ==> ssort x y),
+%   (truth ==> ssorted nil/t),
+%   (all x \ truth ==> ssorted (cons/t x nil/t)),
+%   (all x \ all y \ all z \ ((leq x y) && ssorted (cons/t y z)) ==> ssorted (cons/t x (cons/t y z))),
+%   (truth ==> pperm nil/t nil/t),
+%   (all z \ all v \ all y \ all u \ all x \ ((delete u (cons/t x y) z) && pperm z v) ==> (pperm (cons/t x y) (cons/t u v))),
+%   (all x \ all y \ truth ==> delete x (cons/t x y) y),
+%   (all x \ all y \ all z \ all w \ delete x z w ==> delete x (cons/t y z) (cons/t y w)),
+%   (all x \ truth ==> leq zo x), (all x \ all y \ leq x y ==> leq (s x) (s y))
+% ],
+% LIST = (cons/t (s(s zo)) (cons/t (s zo) nil/t))
+%   , simpleprolog SORTRULES (ssort LIST X), print X.
 
-%     (ssort [(s (s (s (s zo)))), (s zo), zo, (s (s zo))] X), print X.

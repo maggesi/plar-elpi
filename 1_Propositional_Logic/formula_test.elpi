@@ -74,16 +74,41 @@ main :-
     , ok-eq (p && q !! p && r) (distrib (p && (q !! r)))
     , ok-eq (p && r !! q && r) (distrib ((p !! q) && r))
     , section "Test dnf"
-    , ok-eq ((p && neg p !! (q && r) && neg p) !! p && neg r !! (q && r) && neg r) 
-            (rawdnf ((p !! q && r) && ((neg p) !! (neg r))))
-    , ok (tautology ({simpdnf ((p !! q && r) && ((neg p) !! (neg r)))} 
+    , ok-eq (p !! q) (dnf (p !! q))
+    , ok-eq (p && q) (dnf (p && q))
+    , ok-eq (neg p !! q) (dnf (p ==> q))
+    , ok-eq (p && q !! neg p && neg q) (dnf (p <=> q))
+    , ok-eq (falsity) (dnf (p && neg q && q))
+    , ok-eq (falsity) (dnf (neg p && p && q))
+    , ok-eq (falsity) (dnf (neg p && q && p))
+    , ok-eq (falsity) (dnf (p && q && neg p))
+    , ok-eq ((p !! neg q !! q)) (dnf (p !! neg q !! q))
+    , ok-eq ((neg p !! p !! q)) (dnf (neg p !! p !! q))
+    , ok-eq ((neg p !! q !! p)) (dnf (neg p !! q !! p))
+    , ok-eq ((p !! q !! neg p)) (dnf (p !! q !! neg p))
+    , ok-eq (p !! neg p) (dnf (p !! neg p))
+    , ok-eq (p && q && p !! p && q && q) (dnf ((p && q) && (p !! q)))
+    , ok-eq (q && r && neg p !! p && neg r) 
+            (dnf ((p !! q && r) && ((neg p) !! (neg r))))
+    , ok (tautology ({dnf ((p !! q && r) && ((neg p) !! (neg r)))} 
+          <=> ((p !! q && r) && ((neg p) !! (neg r)))))
+    , section "Test cnf"
+    , ok-eq (p !! q) (cnf (p !! q))
+    , ok-eq (p && q) (cnf (p && q))
+    , ok-eq (p && neg p) (cnf (p && neg p))
+    , ok-eq (neg p && p) (cnf (neg p && p))
+    , ok-eq (neg p !! q) (cnf (p ==> q))
+    , ok-eq (p && neg q && q) (cnf (p && neg q && q))
+    , ok-eq ((neg p && p && q)) (cnf (neg p && p && q))
+    , ok-eq ((p && q && neg p)) (cnf (p && q && neg p))
+    , ok-eq (truth) (cnf (p !! neg q !! q))
+    , ok-eq (truth) (cnf (neg p !! p !! q))
+    , ok-eq (truth) (cnf (neg p !! q !! p))
+    , ok-eq (truth) (cnf (p !! q !! neg p))
+    , ok-eq ((neg p !! q) && (p !! neg q)) (cnf (p <=> q))
+    , ok-eq (p && q && (p !! q)) (cnf ((p && q) && (p !! q)))
+    , ok-eq ((p !! q) && (p !! r) && (neg p !! neg r)) 
+            (cnf ((p !! q && r) && ((neg p) !! (neg r))))
+    , ok (tautology ({cnf ((p !! q && r) && ((neg p) !! (neg r)))} 
           <=> ((p !! q && r) && ((neg p) !! (neg r)))))
     ]).
-
-% main :- A = ((p !! q && r) && ((neg p) !! (neg r))),
-%         B = p && (neg r) !! q && r && (neg p),
-%         simpdnf A X, truthtable X, truthtable A, tautology (X <=> A).
-
-% main :- A = ((p !! q && r) && ((neg p) !! (neg r))), 
-%         rawdnf A X, print X, simplify X Y, print Y, rawdnf Y Z, print Z.
-

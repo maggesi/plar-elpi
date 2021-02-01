@@ -40,6 +40,7 @@ copy/fm p p :- !.
 copy/fm q q :- !.
 copy/fm r r :- !.
 
+
 dcopy/fm p p :- !.
 dcopy/fm q q :- !.
 dcopy/fm r r :- !.
